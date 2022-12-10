@@ -33,7 +33,11 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/d3-scripts/map.js",
+              "src/assets/d3-scripts/linechart.js",
+              "src/assets/d3-scripts/boxplotchart.js"
+            ]
           },
           "configurations": {
             "production": {
