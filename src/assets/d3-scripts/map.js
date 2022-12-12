@@ -1,7 +1,6 @@
-
 svgCreated = false;
-
-
+tooltipCreated = false;
+mapCreated = false;
 
 function resizeMap() {
   var svg = d3.select("div#map-visualization").select('svg');
@@ -77,11 +76,12 @@ function drawLegend() {
   container.style("margin", "20px");
 }
 
-function drawMap(stationdata) {
+function drawMap(stationdata, date) {
   // Inpired by https://d3-graph-gallery.com/graph/bubblemap_circleFeatures.html
 
   this.figure = d3.select("div#map-visualization");
 
+  var zoomTransformation;
   var width = parseInt(this.figure.style('width'), 10)
   var height = parseInt(this.figure.style('height'), 10)
 
@@ -110,18 +110,8 @@ function drawMap(stationdata) {
   const projection = d3.geoMercator()
     .center([10, 55])                // GPS of location to zoom on
     .scale(600)                       // This is like the zoom
-    .translate([width / 2, height / 2])
+    .translate([width / 2, height / 2]);
 
-
-  // Create data for circles:
-  const markers = [
-    { long: 9.083, lat: 42.149, group: "A", size: 34 }, // corsica
-    { long: 7.26, lat: 43.71, group: "A", size: 14 }, // nice
-    { long: 2.349, lat: 48.864, group: "B", size: 87 }, // Paris
-    { long: -1.397, lat: 43.664, group: "B", size: 41 }, // Hossegor
-    { long: 3.075, lat: 50.640, group: "C", size: 78 }, // Lille
-    { long: -3.83, lat: 58, group: "C", size: 12 } // Morlaix
-  ];
 
   // Load external data and boot
   d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then(function (data) {
@@ -142,33 +132,89 @@ function drawMap(stationdata) {
       .domain([0, 1200])  // What's in the data
       .range([4, 18])  // Size in pixel
 
-    // Draw the map
-    g.selectAll("path")
-      .data(data.features)
-      .join("path")
-      .attr("fill", "#b8b8b8")
-      .attr("d", d3.geoPath()
-        .projection(projection)
-      )
-      .style("stroke", "black")
-      .style("opacity", .3)
+    if (!mapCreated) {
+      // Draw the map
+      g.selectAll("path")
+        .data(data.features)
+        .join("path")
+        .attr("fill", "#b8b8b8")
+        .attr("d", d3.geoPath()
+          .projection(projection)
+        )
+        .style("stroke", "black")
+        .style("opacity", .3)
+
+      mapCreated = true;
+    }
+
+    // Tooltip functions
+    var Tooltip;
+    if (tooltipCreated) {
+      Tooltip = this.figure.select("div");
+    } else {
+      console.log("New Tooltip")
+      Tooltip = this.figure
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "map-tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+        .style("position", "absolute")
+        .style("right", "40px")
+        .style("top", "40px")
+
+      tooltipCreated = true;
+    }
+
+    var mouseover = function (d) {
+      Tooltip
+        .style("opacity", 1)
+      d3.select(this)
+        .style("stroke", "black")
+        .style("opacity", 1)
+    }
+
+    var mousemove = function (d) {
+      console.log(d.target.__data__)
+      Tooltip
+        .html(
+          "<b>" + d.target.__data__.name.replaceAll("\"", "") + " (" + d.target.__data__.country.replaceAll("\"", "") + ")</b><br>" +
+          "Elevation: " + d.target.__data__.elevation + " m<br>" +
+          "Temperature: " + d.target.__data__.temperatures[0].temperature + " °C (" + String(d.target.__data__.temperatures[0].month).padStart(2, '0') + " " + d.target.__data__.temperatures[0].year + ")")
+
+    }
+    var mouseleave = function (d) {
+      Tooltip
+        .style("opacity", 0)
+      d3.select(this)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+    }
+
 
     // Add circles:
     svg
       .selectAll("myCircles")
       .data(stationdata)
       .join("circle")
-      .attr("cx", d => projection([d.longitude, d.latitude])[0])
-      .attr("cy", d => projection([d.longitude, d.latitude])[1])
-      .attr("r", d => size(d.elevation))
-      .style("fill", d => color(d.temperatures[0].temperature))
-      .attr("stroke", d => color(d.temperatures[0].temperature))
-      .attr("stroke-width", 3)
-      .attr("fill-opacity", .9)
+        .attr("cx", d => projection([d.longitude, d.latitude])[0])
+        .attr("cy", d => projection([d.longitude, d.latitude])[1])
+        .attr("r", d => size(d.elevation))
+        .style("fill", d => color(d.temperatures[0].temperature))
+        .attr("stroke", d => color(d.temperatures[0].temperature))
+        .attr("stroke-width", 3)
+        .attr("fill-opacity", .9)
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
 
     var zoom = d3.zoom()
       .scaleExtent([1, 8])
       .on('zoom', function (event) {
+        zoomTransformation = event.transform
         g.selectAll('path')
           .attr('transform', event.transform);
         svg.selectAll('circle')

@@ -1,3 +1,5 @@
+@import "src/variables.scss";
+
 .view-container {
   position: relative;
 
@@ -10,5 +12,35 @@
   #map-visualization {
     min-height: 700px;
     width: 100%;
+  }
+
+  // .map-tooltip {
+
+  // }
+
+  .animation-controls {
+    padding-left: 20px;
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    p {
+      color: $color-text-light;
+    }
+
+    .animation-btn {
+      cursor: pointer;
+
+      span {
+        color: $color-text-light;
+        font-size: 40px;
+      }
+    }
+
+
+    input {
+      width: 70%;
+    }
   }
 }

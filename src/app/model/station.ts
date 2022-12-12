@@ -28,6 +28,18 @@ export class Station {
     this.temperatures = temperatures;
   }
 
+  getTemperatureAt(date: Date): TemperatureRecord | undefined {
+    var result = this.temperatures.filter(record =>
+      record.month == date.getMonth()
+      && record.year == date.getFullYear());
+
+    if (result.length > 0) {
+      return result[0];
+    } else {
+      return undefined;
+    }
+  }
+
 
 
 }
