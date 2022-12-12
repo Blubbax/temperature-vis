@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Station } from './../../model/station';
+import { DataService } from './../../service/data.service';
+import { Component, HostListener, OnInit } from '@angular/core';
+
+declare function drawMap(data: Station[]): void;
+declare function resizeMap(): void;
 
 @Component({
   selector: 'app-map',
@@ -7,9 +12,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MapComponent implements OnInit {
 
-  constructor() { }
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
+    this.dataService.stationsFiltered.subscribe(
+      data => {
+        console.log(data);
+        drawMap(data);
+      }
+    );
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    resizeMap();
   }
 
 }

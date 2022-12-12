@@ -1,1 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
+@import "src/variables.scss";
+
+
+html, body {
+  margin: 0;
+  background-color: $color-background-light;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  color: $color-text-dark;
+}
+
+h2 {
+  color: $color-text-dark;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.view-container {
+  padding: 20px;
+  margin: 10px;
+  background-color: $color-background-offset;
+}
+
+.controls-container {
+  padding: 10px;
+  background-color: $color-background-dark;
+  width: 100%;
+  margin-top: 10px;
+}

@@ -1,0 +1,18 @@
+@import "src/variables.scss";
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 5px;
+  background-color: $color-background-light;
+  border-bottom: 3px solid $color-background-dark;
+
+  h2 {
+    color: $color-text-dark;
+    font-family: $font-heading;
+    margin: 10px;
+  }
+
+}
