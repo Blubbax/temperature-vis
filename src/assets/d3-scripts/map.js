@@ -13,8 +13,72 @@ function resizeMap() {
     .attr("height", height);
 }
 
-function drawMap(stationdata) {
+function drawLegend() {
+  // Inpired by https://bl.ocks.org/Ro4052/caaf60c1e9afcd8ece95034ea91e1eaa
+  const container = d3.select("div#legend");
+  const colourScale = d3.scaleLinear().domain([-25, 40]).range(["blue", "red"]);
+  // const colourScale = d3
+  //   .scaleSequential(d3.interpolateViridis)
+  //   .domain([-25, 40]);
+  const domain = colourScale.domain();
 
+  const width = 100;
+  const height = 150;
+
+  const paddedDomain = fc.extentLinear()
+    .pad([0.1, 0.1])
+    .padUnit("percent")(domain);
+  const [min, max] = paddedDomain;
+  const expandedDomain = d3.range(min, max, (max - min) / height);
+
+  const xScale = d3
+    .scaleBand()
+    .domain([0, 1])
+    .range([0, width]);
+
+  const yScale = d3
+    .scaleLinear()
+    .domain(paddedDomain)
+    .range([height, 0]);
+
+  const svgBar = fc
+    .autoBandwidth(fc.seriesSvgBar())
+    .xScale(xScale)
+    .yScale(yScale)
+    .crossValue(0)
+    .baseValue((_, i) => (i > 0 ? expandedDomain[i - 1] : 0))
+    .mainValue(d => d)
+    .decorate(selection => {
+      selection.selectAll("path").style("fill", d => colourScale(d));
+    });
+
+  const axisLabel = fc
+    .axisRight(yScale)
+    .tickValues([...domain, (domain[1] + domain[0]) / 2])
+    .tickSizeOuter(0);
+
+  const legendSvg = container.append("svg")
+    .attr("height", height)
+    .attr("width", width);
+
+  const legendBar = legendSvg
+    .append("g")
+    .datum(expandedDomain)
+    .call(svgBar);
+
+  const barWidth = Math.abs(legendBar.node().getBoundingClientRect().x);
+  legendSvg.append("g")
+    .attr("transform", `translate(${barWidth + 20})`)
+    .datum(expandedDomain)
+    .call(axisLabel)
+    .select(".domain")
+    .attr("visibility", "hidden");
+
+  container.style("margin", "20px");
+}
+
+function drawMap(stationdata) {
+  // Inpired by https://d3-graph-gallery.com/graph/bubblemap_circleFeatures.html
 
   this.figure = d3.select("div#map-visualization");
 
@@ -71,7 +135,7 @@ function drawMap(stationdata) {
     //   .range(["#402D54", "#D18975", "#8FD175"])
 
     // const color = d3.scaleSqrt([-100, 0, 100], ["blue", "white", "red"])
-    const color = d3.scaleLinear().domain([-25,40]).range(["blue", "red"])
+    const color = d3.scaleLinear().domain([-25, 40]).range(["blue", "red"])
 
     // Add a scale for bubble size
     const size = d3.scaleLinear()

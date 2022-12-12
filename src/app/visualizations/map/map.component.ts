@@ -4,6 +4,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 
 declare function drawMap(data: Station[]): void;
 declare function resizeMap(): void;
+declare function drawLegend(): void;
 
 @Component({
   selector: 'app-map',
@@ -15,6 +16,9 @@ export class MapComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
+
+    drawLegend();
+
     this.dataService.stationsFiltered.subscribe(
       data => {
         console.log(data);
