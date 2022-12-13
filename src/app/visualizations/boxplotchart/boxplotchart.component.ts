@@ -15,7 +15,7 @@ export class BoxplotchartComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.stationsVisSelection.subscribe(data => {
-      // drawBoxPlotChart(data);
+      drawBoxPlotChart(data);
     });
   }
 

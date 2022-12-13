@@ -1,8 +1,8 @@
+import { TemperatureRecord } from './../../model/temperature-record';
 import { DataService } from './../../service/data.service';
-import { Station } from './../../model/station';
 import { Component, OnInit } from '@angular/core';
 
-declare function drawLineChart(data: Station[]): void;
+declare function drawLineChart(data: TemperatureRecord[]): void;
 
 @Component({
   selector: 'app-linechart',
@@ -16,7 +16,7 @@ export class LinechartComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.stationsFiltered.subscribe(data => {
-      drawLineChart(data);
+      drawLineChart(this.dataService.getStationsAsTemperatureList(data));
     });
   }
 

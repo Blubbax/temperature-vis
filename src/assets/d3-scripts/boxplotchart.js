@@ -17,22 +17,24 @@ function drawBoxPlotChart(datassas) {
     .attr("transform",
       "translate(" + margin.left + "," + margin.top + ")");
 
-  // Read the data and compute summary statistics for each specie
+  // Read the data and compute summary statistics for each species
   d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv").then(function (data) {
 
     // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
-    var sumstat = d3.group(data, d => d.Species) // nest function allows to group the calculation per level of a factor
-      // .key(function (d) { return d.Species; })
-      .rollup(function (d) {
-        q1 = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .25);
-        median = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .5);
-        q3 = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .75);
-        interQuantileRange = q3 - q1;
-        min = q1 - 1.5 * interQuantileRange;
-        max = q3 + 1.5 * interQuantileRange;
-        return ({ q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max });
-      })
-      .entries(data)
+    // var sumstat = d3.group(data, d => d.Species) // nest function allows to group the calculation per level of a factor
+    var sumstat = d3.rollup(data, d => {
+      console.log("Here comes d")
+      console.log(d);
+      q1 = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .25);
+      median = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .5);
+      q3 = d3.quantile(d.map(function (g) { return g.Sepal_Length; }).sort(d3.ascending), .75);
+      interQuantileRange = q3 - q1;
+      min = q1 - 1.5 * interQuantileRange;
+      max = q3 + 1.5 * interQuantileRange;
+      return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
+    }, d => d.Species)
+
+    console.log(sumstat);
 
     // Show the X scale
     var x = d3.scaleBand()
@@ -56,10 +58,10 @@ function drawBoxPlotChart(datassas) {
       .data(sumstat)
       .enter()
       .append("line")
-      .attr("x1", function (d) { return (x(d.key)) })
-      .attr("x2", function (d) { return (x(d.key)) })
-      .attr("y1", function (d) { return (y(d.value.min)) })
-      .attr("y2", function (d) { return (y(d.value.max)) })
+      .attr("x1", function (d) { return (x(d[0])) })
+      .attr("x2", function (d) { return (x(d[0])) })
+      .attr("y1", function (d) { return (y(d[1].min)) })
+      .attr("y2", function (d) { return (y(d[1].max)) })
       .attr("stroke", "black")
       .style("width", 40)
 
@@ -70,9 +72,9 @@ function drawBoxPlotChart(datassas) {
       .data(sumstat)
       .enter()
       .append("rect")
-      .attr("x", function (d) { return (x(d.key) - boxWidth / 2) })
-      .attr("y", function (d) { return (y(d.value.q3)) })
-      .attr("height", function (d) { return (y(d.value.q1) - y(d.value.q3)) })
+      .attr("x", function (d) { return (x(d[0]) - boxWidth / 2) })
+      .attr("y", function (d) { return (y(d[1].q3)) })
+      .attr("height", function (d) { return (y(d[1].q1) - y(d[1].q3)) })
       .attr("width", boxWidth)
       .attr("stroke", "black")
       .style("fill", "#69b3a2")
@@ -83,10 +85,10 @@ function drawBoxPlotChart(datassas) {
       .data(sumstat)
       .enter()
       .append("line")
-      .attr("x1", function (d) { return (x(d.key) - boxWidth / 2) })
-      .attr("x2", function (d) { return (x(d.key) + boxWidth / 2) })
-      .attr("y1", function (d) { return (y(d.value.median)) })
-      .attr("y2", function (d) { return (y(d.value.median)) })
+      .attr("x1", function (d) { return (x(d[0]) - boxWidth / 2) })
+      .attr("x2", function (d) { return (x(d[0]) + boxWidth / 2) })
+      .attr("y1", function (d) { return (y(d[1].median)) })
+      .attr("y2", function (d) { return (y(d[1].median)) })
       .attr("stroke", "black")
       .style("width", 80)
 

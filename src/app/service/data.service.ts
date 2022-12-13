@@ -108,5 +108,11 @@ export class DataService {
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
 
+  public getStationsAsTemperatureList(stations: Station[]): TemperatureRecord[] {
+    var result: TemperatureRecord[] = [];
+    stations.forEach(station => result = result.concat(station.temperatures));
+    return result;
+  }
+
 
 }

@@ -1,3 +1,4 @@
+import { Station } from './station';
 export class TemperatureRecord {
     public stationId: string;
     public year: number;
@@ -5,13 +6,14 @@ export class TemperatureRecord {
     public date: Date;
     public temperature: number;
     public observations: number;
+    public station: Station | undefined;
 
     constructor (
       stationId: string,
       year: number,
       month: number,
       temperature: number,
-      observations: number
+      observations: number,
     )
     {
       this.stationId = stationId;

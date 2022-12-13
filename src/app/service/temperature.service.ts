@@ -43,7 +43,7 @@ export class TemperatureService {
           // 4 ==> Observations
 
           const temperatureRecord = new TemperatureRecord(
-            temperatureData[0],
+            temperatureData[0].replace("\"", "").replace("\"", ""),
             parseInt(temperatureData[1]),
             parseInt(temperatureData[2]),
             parseFloat(temperatureData[3]),

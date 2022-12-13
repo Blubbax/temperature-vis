@@ -1,3 +1,4 @@
+import { TemperatureRecord } from './../model/temperature-record';
 import { TemperatureService } from './temperature.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Station } from './../model/station';
@@ -55,10 +56,11 @@ export class StationService {
               parseFloat(stationData[3]),
               this.countryCodeService.getCountryName(stationData[4]),
               stationData[5],
-              temperatures.filter(record => record.stationId == stationData[0])
+              temperatures.filter(record => record.stationId == stationData[0].replace("\"", "").replace("\"", ""))
             )
 
             this.stationsRaw.set(station.id, station);
+            station.temperatures.forEach(temperature => temperature.station = station);
 
           });
 
@@ -66,7 +68,5 @@ export class StationService {
         });
       });
   }
-
-
 
 }
