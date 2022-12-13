@@ -5,8 +5,8 @@ mapCreated = false;
 function resizeMap() {
   var svg = d3.select("div#map-visualization").select('svg');
 
-  var width = parseInt(this.figure.style('width'), 10)
-  var height = parseInt(this.figure.style('height'), 10)
+  var width = parseInt(d3.select("div#map-visualization").style('width'), 10)
+  var height = parseInt(d3.select("div#map-visualization").style('height'), 10)
 
   svg.attr("width", width)
     .attr("height", height);
@@ -76,7 +76,7 @@ function drawLegend() {
   container.style("margin", "20px");
 }
 
-function drawMap(stationdata, date) {
+function drawMap(stationdata, temperatureMapping) {
   // Inpired by https://d3-graph-gallery.com/graph/bubblemap_circleFeatures.html
 
   this.figure = d3.select("div#map-visualization");
@@ -152,7 +152,6 @@ function drawMap(stationdata, date) {
     if (tooltipCreated) {
       Tooltip = this.figure.select("div");
     } else {
-      console.log("New Tooltip")
       Tooltip = this.figure
         .append("div")
         .style("opacity", 0)
@@ -178,10 +177,9 @@ function drawMap(stationdata, date) {
     }
 
     var mousemove = function (d) {
-      console.log(d.target.__data__)
       Tooltip
         .html(
-          "<b>" + d.target.__data__.name.replaceAll("\"", "") + " (" + d.target.__data__.country.replaceAll("\"", "") + ")</b><br>" +
+          "<b>" + d.target.__data__.name + " (" + d.target.__data__.country + ")</b><br>" +
           "Elevation: " + d.target.__data__.elevation + " m<br>" +
           "Temperature: " + d.target.__data__.temperatures[0].temperature + " °C (" + String(d.target.__data__.temperatures[0].month).padStart(2, '0') + " " + d.target.__data__.temperatures[0].year + ")")
 
@@ -196,20 +194,38 @@ function drawMap(stationdata, date) {
 
 
     // Add circles:
+    svg.selectAll("myCircles").remove();
+
     svg
       .selectAll("myCircles")
       .data(stationdata)
       .join("circle")
-        .attr("cx", d => projection([d.longitude, d.latitude])[0])
-        .attr("cy", d => projection([d.longitude, d.latitude])[1])
-        .attr("r", d => size(d.elevation))
-        .style("fill", d => color(d.temperatures[0].temperature))
-        .attr("stroke", d => color(d.temperatures[0].temperature))
-        .attr("stroke-width", 3)
-        .attr("fill-opacity", .9)
+      .attr("cx", d => projection([d.longitude, d.latitude])[0])
+      .attr("cy", d => projection([d.longitude, d.latitude])[1])
+      .attr("r", d => size(d.elevation))
+      .style("fill", d => {
+        var temperature = temperatureMapping.get(d.id);
+        if (temperature == undefined) {
+          return "white"
+        } else {
+          return color(temperature.temperature);
+        }
+      })
+      .attr("stroke", d => {
+        var temperature = temperatureMapping.get(d.id);
+        if (temperature == undefined) {
+          return "black"
+        } else {
+          return color(temperature.temperature);
+        }
+      })
+      .attr("stroke-width", 3)
+      .attr("fill-opacity", .9)
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+
+
 
     var zoom = d3.zoom()
       .scaleExtent([1, 8])

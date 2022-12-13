@@ -17,7 +17,7 @@ export class TemperatureRecord {
       this.stationId = stationId;
       this.year = year;
       this.month = month;
-      this.date = new Date(year, month, 1);
+      this.date = new Date(year, month);
       this.temperature = temperature;
       this.observations = observations;
     }

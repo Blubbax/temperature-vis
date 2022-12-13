@@ -49,7 +49,7 @@ export class StationService {
             // 7 ==> YearLast
 
             const station = new Station(
-              stationData[0],
+              stationData[0].replace("\"", "").replace("\"", ""),
               parseFloat(stationData[1]),
               parseFloat(stationData[2]),
               parseFloat(stationData[3]),
