@@ -34,8 +34,9 @@ export class StationService {
 
         this.temperatureService.temperatures.subscribe(temperatures => {
 
-          // filter attributes (fisrt row are headers)
+          // filter attributes (fisrt row are headers and last is empty)
           dataObjects.splice(0, 1);
+          dataObjects.splice(dataObjects.length - 1, 1);
 
           dataObjects.forEach((stationString: string) => {
             const stationData = stationString.split(',');
@@ -55,7 +56,7 @@ export class StationService {
               parseFloat(stationData[2]),
               parseFloat(stationData[3]),
               this.countryCodeService.getCountryName(stationData[4]),
-              stationData[5],
+              stationData[5].replace("\"", "").replace("\"", ""),
               temperatures.filter(record => record.stationId == stationData[0].replace("\"", "").replace("\"", ""))
             )
 

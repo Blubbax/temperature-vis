@@ -1,3 +1,5 @@
+import { AttributeSelectorComponent } from './visualizations/helper/attribute-selector/attribute-selector.component';
+import { AttributePillComponent } from './visualizations/helper/attribute-pill/attribute-pill.component';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,7 +25,9 @@ import { VisualizationsComponent } from './components/visualizations/visualizati
     HeaderComponent,
     FooterComponent,
     FilterComponent,
-    VisualizationsComponent
+    VisualizationsComponent,
+    AttributePillComponent,
+    AttributeSelectorComponent
   ],
   imports: [
     BrowserModule,

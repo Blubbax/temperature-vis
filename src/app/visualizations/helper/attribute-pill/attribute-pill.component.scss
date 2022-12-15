@@ -1,0 +1,27 @@
+@import "src/variables.scss";
+
+.container {
+
+  background-color: $color-background-highlight;
+  padding: 5px 10px;
+  padding-left: 15px;
+  margin: 5px;
+  height: 30px;
+  color: $color-text-dark;
+
+  width: fit-content;
+
+  border-radius: 15px;
+
+
+  .remove {
+    height: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 0 5px;
+  }
+
+  .remove:hover {
+    background-color: rgba(212, 212, 212, 0.795);
+  }
+}

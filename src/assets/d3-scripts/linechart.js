@@ -12,6 +12,7 @@ function resizeLineChart() {
 }
 
 function drawLineChart(data) {
+  console.log(data)
   // Inspired by https://d3-graph-gallery.com/graph/line_several_group.html
 
 
@@ -36,7 +37,7 @@ function drawLineChart(data) {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+      .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
     linePlotCreated = true;
   }
@@ -46,7 +47,7 @@ function drawLineChart(data) {
   console.log(sumstat)
 
   const x = d3.scaleLinear()
-    .domain(d3.extent(data, function (d) { return d.year; }))
+    .domain(d3.extent(data, function (d) { return d.date; }))
     .range([0, width]);
 
   const y = d3.scaleLinear()
@@ -80,9 +81,11 @@ function drawLineChart(data) {
     .attr("stroke-width", 1.5)
     .attr("d", function (d) {
       return d3.line()
-        .x(function (d) { return x(d.year); })
+        .x(function (d) { return x(d.date); })
         .y(function (d) { return y(+d.temperature); })
-        (d[1])
+        (d[1]);
     })
+
+
 
 }

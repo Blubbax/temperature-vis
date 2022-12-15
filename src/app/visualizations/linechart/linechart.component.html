@@ -1,3 +1,13 @@
 <div class="view-container">
   <div id="linechart-visualization"></div>
+  <div class="controls-container">
+    <span>
+      Select whole year or a specific month:
+    </span>
+    <select name="attributes" #attributes (change)="changeSelection(attributes.value)">
+      <option [value]="'Year'"  [defaultSelected]="true">Year</option>
+      <option *ngFor="let attr of months" [value]="attr">{{attr}}</option>
+    </select>
+  </div>
 </div>
+

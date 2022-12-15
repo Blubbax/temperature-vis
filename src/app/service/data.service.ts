@@ -110,7 +110,7 @@ export class DataService {
 
   public getStationsAsTemperatureList(stations: Station[]): TemperatureRecord[] {
     var result: TemperatureRecord[] = [];
-    stations.forEach(station => result = result.concat(station.temperatures));
+    stations.forEach((stat) => {result = result.concat(stat.temperatures)});
     return result;
   }
 

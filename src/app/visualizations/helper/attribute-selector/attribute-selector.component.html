@@ -1,0 +1,14 @@
+<div class="controls-container">
+
+  <div class="container">
+    <select name="attributes" #attributeSelector (change)="changeSelection(attributeSelector.value)">
+      <option *ngFor="let attr of attributes" [value]="attr">{{attr}}</option>
+    </select>
+    <button (click)="selectAttribute()">Add</button>
+  </div>
+
+  <div class="attributes">
+    <app-attribute-pill *ngFor="let attr of selectedAttributes" [name]="attr" (deleteEvent)="removeAttribute(attr)"></app-attribute-pill>
+  </div>
+
+</div>

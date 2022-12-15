@@ -20,10 +20,11 @@ export class CountryCodeService {
 
         // filter attributes (fisrt row are headers)
         dataObjects.splice(0, 1);
+        dataObjects.splice(dataObjects.length-1, 1);
 
         dataObjects.forEach((countrycodeString: string) => {
           const countryCodeData = countrycodeString.split(',');
-          this.countryCodes.set(countryCodeData[0], countryCodeData[1]);
+          this.countryCodes.set(countryCodeData[0], countryCodeData[1].replace("\"", "").replace("\"", ""));
         });
       });
   }

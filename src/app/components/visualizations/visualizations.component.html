@@ -6,4 +6,5 @@
   <app-boxplotchart id="boxplot"></app-boxplotchart>
 </div>
 
-<app-table></app-table>
+<!-- <app-table [attributes]="['stationId', 'year', 'month', 'date', 'temperature', 'observations', 'station.name']" [selectedAttributes]="['stationId', 'year', 'month', 'temperature', 'observations']"></app-table> -->
+<app-table [attributes]="['id', 'latitude', 'longitude', 'elevation', 'country', 'name']" [selectedAttributes]="['id', 'elevation', 'country', 'name']"></app-table>
