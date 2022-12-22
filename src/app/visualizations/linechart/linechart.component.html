@@ -4,7 +4,7 @@
     <span>
       Select whole year or a specific month:
     </span>
-    <select name="attributes" #attributes (change)="changeSelection(attributes.value)">
+    <select title="Month or Year" name="attributes" #attributes (change)="changeSelection(attributes.value)">
       <option [value]="'Year'"  [defaultSelected]="true">Year</option>
       <option *ngFor="let attr of months" [value]="attr">{{attr}}</option>
     </select>
