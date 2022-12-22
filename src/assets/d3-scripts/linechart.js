@@ -83,50 +83,42 @@ function drawLineChart(data) {
 
   // svg.selectAll(".line").remove();
 
-  var lines = svg.selectAll(".line")
-    .data(sumstat)
-    .attr("class", "line")
-    .attr("fill", "none")
-    .attr("stroke", function (d) { return color(d[0]) });
+  // var lines = svg.selectAll(".line")
+  //   .data(sumstat)
+  //   .attr("class", "line")
+  //   .attr("fill", "none")
+  //   .attr("stroke", function (d) { return color(d[0]) });
 
   var line = (d) => d3.line()
     .x(function (d) { return lineChartXScale(d.date); })
     .y(function (d) { return lineChartYScale(+d.temperature); })
     (d[1]);
 
-  // transition from previous paths to new paths
-  lines.transition().duration(1500)
-    .attr("d", line)
+  // // transition from previous paths to new paths
+  // lines.transition().duration(1500)
+  //   .attr("d", line)
 
-  lines.enter()
-    .append("path")
-    .attr("class", "line")
-    .attr("fill", "none")
-    .attr("stroke", function (d) { return color(d[0]) })
-    .attr("d", line);
-
-  // exit
-  lines.exit()
-    .remove();
-
-
-
-
-
-  // // Draw the line
-  // svg.selectAll(".line")
-  //   .data(sumstat)
-  //   .join("path")
+  // lines.enter()
+  //   .append("path")
   //   .attr("class", "line")
   //   .attr("fill", "none")
   //   .attr("stroke", function (d) { return color(d[0]) })
-  //   .attr("stroke-width", 1.5)
-  //   .attr("d", function (d) {
-  //     return d3.line()
-  //       .x(function (d) { return x(d.date); })
-  //       .y(function (d) { return y(+d.temperature); })
-  //       (d[1]);
-  //   })
+  //   .attr("d", line);
+
+  // // exit
+  // lines.exit()
+  //   .remove();
+
+  // Draw the line
+  svg.selectAll(".line")
+    .data(sumstat)
+    .join("path")
+    .attr("class", "line")
+    .attr("fill", "none")
+    .transition().duration(1500)
+    .attr("stroke", function (d) { return color(d[0]) })
+    .attr("stroke-width", 1.5)
+    .attr("d", line);
 
   // console.log("After line creation")
   // console.log(svg.selectAll(".line"))
