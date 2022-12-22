@@ -14,7 +14,6 @@ function resizeLineChart() {
     .attr("height", height);
 }
 
-
 function drawLineChart(data) {
   console.log("js")
   console.log(data)
@@ -55,7 +54,9 @@ function drawLineChart(data) {
     .domain([d3.min(data, function (d) { return +d.temperature; }), d3.max(data, function (d) { return +d.temperature; })])
     .range([height, 0]);
 
-  var xAxis = d3.axisBottom(lineChartXScale);
+  var xAxis = d3.axisBottom(lineChartXScale)
+    .tickFormat(d3.timeFormat("%Y"));
+
   var yAxis = d3.axisLeft(lineChartYScale);
 
   if (!linePlotAxesCreated) {
@@ -81,33 +82,10 @@ function drawLineChart(data) {
   const color = d3.scaleOrdinal()
     .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'])
 
-  // svg.selectAll(".line").remove();
-
-  // var lines = svg.selectAll(".line")
-  //   .data(sumstat)
-  //   .attr("class", "line")
-  //   .attr("fill", "none")
-  //   .attr("stroke", function (d) { return color(d[0]) });
-
   var line = (d) => d3.line()
     .x(function (d) { return lineChartXScale(d.date); })
     .y(function (d) { return lineChartYScale(+d.temperature); })
     (d[1]);
-
-  // // transition from previous paths to new paths
-  // lines.transition().duration(1500)
-  //   .attr("d", line)
-
-  // lines.enter()
-  //   .append("path")
-  //   .attr("class", "line")
-  //   .attr("fill", "none")
-  //   .attr("stroke", function (d) { return color(d[0]) })
-  //   .attr("d", line);
-
-  // // exit
-  // lines.exit()
-  //   .remove();
 
   // Draw the line
   svg.selectAll(".line")
@@ -115,10 +93,47 @@ function drawLineChart(data) {
     .join("path")
     .attr("class", "line")
     .attr("fill", "none")
-    .transition().duration(1500)
+    .transition().duration(1500).ease(d3.easeLinear)
     .attr("stroke", function (d) { return color(d[0]) })
     .attr("stroke-width", 1.5)
     .attr("d", line);
+
+  // svg.selectAll(".circle")
+  //   .data(sumstat)
+  //   .join("circle")
+  //   .attr("class", "circle")
+  //   .attr("cx", function (d) { return x(d.data) })
+  //   .attr("cy", function (d) { return y(d.temperature) })
+  //   .attr("r", 4)
+  //   .style("fill", "transparent")
+  //   .attr("stroke", "black")
+
+  var circles = svg.selectAll("circle")
+    .data(data)
+    // .attr("class", "circle")
+    // .attr("fill", "none")
+    // .attr("stroke", "#ffab00");
+
+  // svg.selectAll(".dot").remove();
+
+  circles.enter()
+    .append("circle") // Uses the enter().append() method
+    .attr("cx", function (d) { return lineChartXScale(d.date) })
+    .attr("cy", function (d) { return lineChartYScale(d.temperature) })
+    .attr("class", "dot")
+    .attr("r", 3)
+    .attr('fill', function (d) { return color(d.stationId) });
+
+  circles.transition()
+    .duration(1500)
+    .ease(d3.easeLinear)
+    .attr("cx", function (d) { return lineChartXScale(d.date) })
+    .attr("cy", function (d) { return lineChartYScale(d.temperature) })
+    .attr('fill', function (d) { return color(d.stationId) });
+
+  circles.exit()
+    .remove();
+
 
   // console.log("After line creation")
   // console.log(svg.selectAll(".line"))
