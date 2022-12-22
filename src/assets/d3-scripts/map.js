@@ -13,9 +13,14 @@ function resizeMap() {
 }
 
 function drawLegend() {
+
+  const colourScale = d3.scaleLinear()
+      .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
+      .range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
+
   // Inpired by https://bl.ocks.org/Ro4052/caaf60c1e9afcd8ece95034ea91e1eaa
   const container = d3.select("div#legend");
-  const colourScale = d3.scaleLinear().domain([-25, 40]).range(["blue", "red"]);
+  // const colourScale = d3.scaleLinear().domain([-24, -16, -8, 0, 8, 16, 24, 32, 40]).range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd']);
   // const colourScale = d3
   //   .scaleSequential(d3.interpolateViridis)
   //   .domain([-25, 40]);
@@ -124,8 +129,15 @@ function drawMap(stationdata, temperatureMapping) {
     //   .domain(["A", "B", "C"])
     //   .range(["#402D54", "#D18975", "#8FD175"])
 
+
+    // scaleAnomaly = d3.scaleDiverging(t => d3.interpolateRdBu(1 - t))
+    //   .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
+    // const color = scaleAnomaly.copy().range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
     // const color = d3.scaleSqrt([-100, 0, 100], ["blue", "white", "red"])
-    const color = d3.scaleLinear().domain([-25, 40]).range(["blue", "red"])
+    // const color = d3.scaleLinear().domain([-25, 40]).range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
+    const color = d3.scaleLinear()
+      .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
+      .range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
 
     // Add a scale for bubble size
     const size = d3.scaleLinear()

@@ -1,0 +1,39 @@
+svg {
+  font-family: -apple-system, system-ui, "avenir next", avenir, helvetica, "helvetica neue", ubuntu, roboto, noto, "segoe ui", arial, sans-serif;
+}
+
+rect.overlay {
+  stroke: #888;
+}
+
+rect.selection {
+  stroke: none;
+  fill: steelblue;
+  fill-opacity: 0.4;
+}
+
+#labelleft,
+#labelright,
+#label-max,
+#label-min {
+  font-size: 12px;
+}
+
+#labelleft,
+#labelright {
+  dominant-baseline: hanging;
+}
+
+#label-min,
+#label-max {
+  dominant-baseline: central;
+  text-anchor: end;
+}
+
+#labelleft {
+  text-anchor: end;
+}
+
+#labelright {
+  text-anchor: start;
+}

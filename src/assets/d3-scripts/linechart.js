@@ -12,6 +12,7 @@ function resizeLineChart() {
 }
 
 function drawLineChart(data) {
+  console.log("js")
   console.log(data)
   // Inspired by https://d3-graph-gallery.com/graph/line_several_group.html
 
@@ -71,6 +72,7 @@ function drawLineChart(data) {
   // color palette
   const color = d3.scaleOrdinal()
     .range(['#e41a1c', '#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999'])
+
 
   // Draw the line
   svg.selectAll(".line")

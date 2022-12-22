@@ -1,9 +1,10 @@
 import { Station } from './../../model/station';
 import { TemperatureRecord } from './../../model/temperature-record';
 import { DataService } from './../../service/data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 declare function drawLineChart(data: TemperatureRecord[]): void;
+declare function resizeLineChart(): void;
 
 @Component({
   selector: 'app-linechart',
@@ -24,8 +25,13 @@ export class LinechartComponent implements OnInit {
       // TODO data[0] restriction removen
       this.rawData = this.dataService.getStationsAsTemperatureList([data[0]]);
       this.currentData = this.rawData;
-      this.changeSelection(this.currentSelection);
+      // this.changeSelection(this.currentSelection);
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    resizeLineChart();
   }
 
   changeSelection(value: string) {

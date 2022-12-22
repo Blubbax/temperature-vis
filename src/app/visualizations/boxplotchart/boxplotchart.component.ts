@@ -1,9 +1,10 @@
 import { Station } from './../../model/station';
 import { TemperatureRecord } from './../../model/temperature-record';
 import { DataService } from './../../service/data.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 
 declare function drawBoxPlotChart(data: TemperatureRecord[]): void;
+declare function resizeBoxPlotChart(): void;
 
 @Component({
   selector: 'app-boxplotchart',
@@ -18,6 +19,11 @@ export class BoxplotchartComponent implements OnInit {
     this.dataService.stationsVisSelection.subscribe((data: Station[]) => {
       drawBoxPlotChart(this.dataService.getStationsAsTemperatureList([data[0]]));
     });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    resizeBoxPlotChart();
   }
 
 }

@@ -14,6 +14,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { FilterComponent } from './components/filter/filter.component';
 import { VisualizationsComponent } from './components/visualizations/visualizations.component';
+import { RangesliderComponent } from './visualizations/rangeslider/rangeslider.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { VisualizationsComponent } from './components/visualizations/visualizati
     FilterComponent,
     VisualizationsComponent,
     AttributePillComponent,
-    AttributeSelectorComponent
+    AttributeSelectorComponent,
+    RangesliderComponent
   ],
   imports: [
     BrowserModule,

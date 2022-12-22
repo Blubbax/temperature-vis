@@ -1,5 +1,5 @@
 
-function drawRangeslider() {
+function drawRangeslider(data) {
 
   const defaultOptions = {
     'w': 400,
@@ -15,11 +15,14 @@ function drawRangeslider() {
     format: d3.format('.3s'),
   };
 
-  const [min, max] = d3.extent(Object.keys(histogram).map(d => +d));
+  const [min, max] = [d3.min(data, function (d) { return +d.year; }), d3.max(data, function (d) { return +d.year; })];
   const range = [min, max + 1]
 
+  var histogram = histogram(data);
+
+
   // set width and height of svg
-  const { w, h, margin, defaultRange, bucketSize, format } = { ...defaultOptions, ...customOptions };
+  const { w, h, margin, defaultRange, bucketSize, format } = { ...defaultOptions };
 
   // dimensions of slider bar
   const width = w - margin.left - margin.right;
@@ -34,7 +37,10 @@ function drawRangeslider() {
     .range([0, height]);
 
   // create svg and translated g
-  var svg = d3.select(DOM.svg(w, h))
+  var svg = d3.select("div#rangeslider")
+              .append("svg")
+                  .attr("width", width)
+                  .attr("height", height)
   const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
 
   // draw histogram values
