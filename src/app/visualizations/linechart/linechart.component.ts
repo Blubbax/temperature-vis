@@ -24,7 +24,7 @@ export class LinechartComponent implements OnInit {
     this.dataService.stationsFiltered.subscribe((data: Station[]) => {
       // TODO data[0] restriction removen
       // this.rawData = this.dataService.getStationsAsTemperatureList([data[0], data[1]]);
-      this.rawData = this.dataService.getStationsAsTemperatureList([data[0]]);
+      this.rawData = this.dataService.getStationsAsTemperatureList([data[0], data[1]]);
       this.currentData = this.rawData;
       this.changeSelection(this.currentSelection);
     });
