@@ -1,0 +1,31 @@
+
+.panel {
+
+  border: 1px solid #555;
+  margin: 5px 0 5px 0;
+
+  .headline {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    cursor: pointer;
+    margin: 10px 0;
+
+    span {
+      margin: 5px;
+    }
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+  .content {
+    display: block;
+
+    &.visible {
+      display: none;
+    }
+  }
+}

@@ -1,7 +1,8 @@
 <div class="controls-container">
 
   <div class="container">
-    <select name="attributes" #attributeSelector (change)="changeSelection(attributeSelector.value)">
+    <select title="Select element" name="attributes" #attributeSelector (change)="changeSelection(attributeSelector.value)">
+      <option value="" disabled selected>Select element</option>
       <option *ngFor="let attr of attributes" [value]="attr">{{attr}}</option>
     </select>
     <button (click)="selectAttribute()">Add</button>

@@ -8,8 +8,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class AttributeSelectorComponent implements OnInit {
 
   @Input() attributes: string[] = [];
+  @Input() allowDuplicates = true;
   // @Output() attributeAdded = new EventEmitter<string>();
   @Output() attributeRemoved = new EventEmitter<string>();
+  @Output() attributesChanged = new EventEmitter<string[]>();
 
   @Input() selectedAttributes: string[] = [];
 
@@ -36,12 +38,14 @@ export class AttributeSelectorComponent implements OnInit {
     });
     this.selectedAttributes = newList;
     this.attributeRemoved.emit(attr);
+    this.attributesChanged.emit(this.selectedAttributes);
   }
 
   selectAttribute() {
     if (this.selectedAttribute !== "") {
+      if (this.allowDuplicates || !this.selectedAttributes.includes(this.selectedAttribute))
       this.selectedAttributes.push(this.selectedAttribute)
-      // this.attributeAdded.emit(this.selectedAttribute);
+      this.attributesChanged.emit(this.selectedAttributes);
     }
   }
 

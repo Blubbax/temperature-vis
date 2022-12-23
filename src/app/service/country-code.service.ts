@@ -24,7 +24,7 @@ export class CountryCodeService {
 
         dataObjects.forEach((countrycodeString: string) => {
           const countryCodeData = countrycodeString.split(',');
-          this.countryCodes.set(countryCodeData[0], countryCodeData[1].replace("\"", "").replace("\"", ""));
+          this.countryCodes.set(countryCodeData[0], countryCodeData[1].replace("\"", "").replace("\"", "").trim());
         });
       });
   }

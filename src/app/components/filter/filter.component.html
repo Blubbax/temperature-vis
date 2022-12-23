@@ -1,10 +1,15 @@
 <div class="view-container">
   <h2>Filter</h2>
-  <div>
-    TODO Filter Countries and Stations
-  </div>
-  <div>
-    TODO Rangeslider time
-  </div>
-  <app-rangeslider></app-rangeslider>
+
+  <app-expansion-panel title="Countries">
+    <app-attribute-selector [attributes]="countries" [selectedAttributes]="[]" [allowDuplicates]="false" (attributesChanged)="countriesChanged($event)"></app-attribute-selector>
+  </app-expansion-panel>
+
+  <app-expansion-panel title="Stations">
+    <app-attribute-selector [attributes]="stations" [selectedAttributes]="[]" [allowDuplicates]="false" (attributesChanged)="stationsChanged($event)"></app-attribute-selector>
+  </app-expansion-panel>
+
+  <app-expansion-panel title="Timespan">
+    <app-rangeslider (rangeChanged)="applyRangeFilter($event)"></app-rangeslider>
+  </app-expansion-panel>
 </div>

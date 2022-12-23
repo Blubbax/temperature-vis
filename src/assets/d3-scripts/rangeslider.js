@@ -1,14 +1,16 @@
+var rangeSliderCreated = false;
 
 function drawRangeslider(data) {
+  console.log("Rangeslider draw");
 
   const defaultOptions = {
-    'w': 400,
-    'h': 150,
+    'w': 600,
+    'h': 100,
     'margin': {
       top: 20,
       bottom: 20,
-      left: 30,
-      right: 30,
+      left: 50,
+      right: 50,
     },
     bucketSize: 1,
     defaultRange: [0, 100],
@@ -17,9 +19,6 @@ function drawRangeslider(data) {
 
   const [min, max] = [d3.min(data, function (d) { return +d.year; }), d3.max(data, function (d) { return +d.year; })];
   const range = [min, max + 1]
-
-  var histogram = histogram(data);
-
 
   // set width and height of svg
   const { w, h, margin, defaultRange, bucketSize, format } = { ...defaultOptions };
@@ -32,27 +31,65 @@ function drawRangeslider(data) {
   const x = d3.scaleLinear()
     .domain(range)  // data space
     .range([0, width]);  // display space
+
+  var histogram = d3.histogram(data)
+    .value(function (d) { return d.year; })
+    .domain(x.domain())
+    .thresholds(x.ticks(max - min));
+
+
+
+  // set the parameters for the histogram
+  const histogramDef = d3.histogram()
+  .value(function(d) { return d.year; })   // I need to give the vector of value
+  .domain(x.domain())  // then the domain of the graphic
+  .thresholds(x.ticks(70)); // then the numbers of bins
+
+  // And apply this function to data to get the bins
+  const bins = histogramDef(data);
+
   const y = d3.scaleLinear()
-    .domain([0, d3.max(Object.values(histogram))])
-    .range([0, height]);
+  .domain([300, 0])
+  .range([0, height]);
 
   // create svg and translated g
-  var svg = d3.select("div#rangeslider")
-              .append("svg")
-                  .attr("width", width)
-                  .attr("height", height)
-  const g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
+  var svg;
+  var g;
+  if (!rangeSliderCreated) {
+
+    svg = d3.select("div#rangeslider")
+      .append("svg")
+      .attr("width", w)
+      .attr("height", h)
+    g = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`)
+    rangeSliderCreated = true
+  } else {
+    svg = d3.select("div#rangeslider");
+    g = svg.select('g');
+  }
+
+  // // draw histogram values
+  // g.append('g').selectAll('rect')
+  //   .data(d3.range(range[0], range[1] + 1))
+  //   .enter()
+  //   .append('rect')
+  //     .attr('x', d => x(d))
+  //     .attr('y', d => height - y(histogram[d] || 0))
+  //     .attr('width', width / (range[1] - range[0]))
+  //     .attr('height', d => y(histogram[d] || 0)) //d => y(histogram[d] || 0))
+  //     .style('fill', '#555');
 
   // draw histogram values
-  g.append('g').selectAll('rect')
-    .data(d3.range(range[0], range[1] + 1))
-    .enter()
-    .append('rect')
-    .attr('x', d => x(d))
-    .attr('y', d => height - y(histogram[d] || 0))
-    .attr('width', width / (range[1] - range[0]))
-    .attr('height', d => y(histogram[d] || 0)) //d => y(histogram[d] || 0))
-    .style('fill', '#555');
+  g.selectAll('rect')
+    .data(bins)
+    .join('rect')
+      .attr('x', 1)
+      .attr("transform", function(d) { return `translate(${x(d.x0)} , ${y(d.length)})`})
+      .attr("width", function(d) { return x(d.x1) - x(d.x0) -1})
+      .attr("height", function(d) { return height - y(d.length); })
+      .style("fill", "#69b3a2")
+
+    // .attr("transform", function(d) { console.log(d.x0); return `translate(${x(d.x0)} , ${y(d.length)})`})
 
   // draw background lines
   g.append('g').selectAll('line')
@@ -66,36 +103,36 @@ function drawRangeslider(data) {
     .style('stroke', '#ccc');
 
   // labels
-  var labelMax = g.append('text')
+  var labelMin = g.append('text')
     .attr('id', 'label-min')
-    .attr('x', '-0.6em')
-    .attr('y', height)
+    .attr('x', '-35px')
+    .attr('y', 0)
     .text(min);
 
   var labelMax = g.append('text')
     .attr('id', 'label-max')
-    .attr('x', '-0.6em')
+    .attr('x', width)
     .attr('y', 0)
     .text(max);
 
   var labelL = g.append('text')
     .attr('id', 'labelleft')
     .attr('x', 0)
-    .attr('y', height + 5);
+    .attr('y', height + 15);
 
   var labelR = g.append('text')
     .attr('id', 'labelright')
     .attr('x', 0)
-    .attr('y', height + 5);
+    .attr('y', height + 15);
 
   // define brush
   var brush = d3.brushX()
     .extent([[0, 0], [width, height]])
-    .on('brush', function () {
-      var s = d3.event.selection;
+    .on('brush', function (event) {
+      var s = event.selection;
       // update and move labels
-      labelL.attr('x', s[0]).text(format(Math.round(x.invert(s[0])) * bucketSize));
-      labelR.attr('x', s[1]).text(format((Math.round(x.invert(s[1])) - 1) * bucketSize));
+      labelL.attr('x', s[0] - 35).text((Math.round(x.invert(s[0])) * bucketSize))
+      labelR.attr('x', s[1]).text(((Math.round(x.invert(s[1])) - 1) * bucketSize));
       // move brush handles
       handle
         .attr("display", null)
@@ -104,13 +141,14 @@ function drawRangeslider(data) {
       // if the view should only be updated after brushing is over,
       // move these two lines into the on('end') part below
       svg.node().value = s.map(d => bucketSize * Math.round(x.invert(d)));
-      svg.node().dispatchEvent(new CustomEvent("input"));
     })
-    .on('end', function () {
-      if (!d3.event.sourceEvent) return;
-      var d0 = d3.event.selection.map(x.invert);
+    .on('end', function (event) {
+      if (!event.sourceEvent) return;
+      var d0 = event.selection.map(x.invert);
       var d1 = d0.map(Math.round)
-      d3.select(this).transition().call(d3.event.target.move, d1.map(x))
+      d3.select(this).transition().call(event.target.move, d1.map(x))
+      document.getElementById('rangeslider')
+        .dispatchEvent(new CustomEvent("onrangechange", { detail: d1 }));
     });
 
 
@@ -144,15 +182,13 @@ function drawRangeslider(data) {
   // https://bl.ocks.org/mbostock/6498000
   gBrush.selectAll(".overlay")
     .each(function (d) { d.type = "selection"; })
-    .on("mousedown touchstart", brushcentered);
-
-  function brushcentered() {
-    var dx = x(1) - x(0), // Use a fixed width when recentering.
-      cx = d3.mouse(this)[0],
-      x0 = cx - dx / 2,
-      x1 = cx + dx / 2;
-    d3.select(this.parentNode).call(brush.move, x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]);
-  }
+    .on("mousedown touchstart", (event) => {
+      var dx = x(1) - x(0), // Use a fixed width when recentering.
+        cx = d3.pointer(event)[0],
+        x0 = cx - dx / 2,
+        x1 = cx + dx / 2;
+      d3.select(this.parentNode).call(brush.move, x1 > width ? [width - dx, width] : x0 < 0 ? [0, dx] : [x0, x1]);
+    });
 
   // select entire range
   //  gBrush.call(brush.move, range.map(x))
@@ -164,6 +200,6 @@ function drawRangeslider(data) {
     .map(Math.round)
     .map(x));
 
-  svg.append('style').text(style);
-  return svg.node();
+  // svg.append('style').text(style);
+  // return svg.node();
 }
