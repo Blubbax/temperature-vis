@@ -26,7 +26,7 @@ export class LinechartComponent implements OnInit {
       // this.rawData = this.dataService.getStationsAsTemperatureList([data[0], data[1]]);
       this.rawData = this.dataService.getStationsAsTemperatureList([data[0]]);
       this.currentData = this.rawData;
-      // this.changeSelection(this.currentSelection);
+      this.changeSelection(this.currentSelection);
     });
   }
 

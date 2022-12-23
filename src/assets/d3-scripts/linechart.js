@@ -93,7 +93,7 @@ function drawLineChart(data) {
     .join("path")
     .attr("class", "line")
     .attr("fill", "none")
-    .transition().duration(1500).ease(d3.easeLinear)
+    .transition().duration(500).ease(d3.easeLinear)
     .attr("stroke", function (d) { return color(d[0]) })
     .attr("stroke-width", 1.5)
     .attr("d", line);
@@ -108,36 +108,40 @@ function drawLineChart(data) {
   //   .style("fill", "transparent")
   //   .attr("stroke", "black")
 
+  console.log("data for points")
+  console.log(data)
   var circles = svg.selectAll("circle")
     .data(data)
+    .join("circle")
+    // .transition().duration(500).ease(d3.easeLinear)
+        .attr("cx", function (d) { return lineChartXScale(d.date) })
+        .attr("cy", function (d) { return lineChartYScale(d.temperature) })
+        .attr("class", "dot")
+        .attr("r", 3)
+        .attr('fill', function (d) { return color(d.stationId) });
     // .attr("class", "circle")
     // .attr("fill", "none")
     // .attr("stroke", "#ffab00");
 
   // svg.selectAll(".dot").remove();
 
-  circles.enter()
-    .append("circle") // Uses the enter().append() method
-    .attr("cx", function (d) { return lineChartXScale(d.date) })
-    .attr("cy", function (d) { return lineChartYScale(d.temperature) })
-    .attr("class", "dot")
-    .attr("r", 3)
-    .attr('fill', function (d) { return color(d.stationId) });
+  // circles.enter()
+  //   .append("circle") // Uses the enter().append() method
+  //   .attr("cx", function (d) { return lineChartXScale(d.date) })
+  //   .attr("cy", function (d) { return lineChartYScale(d.temperature) })
+  //   .attr("class", "dot")
+  //   .attr("r", 3)
+  //   .attr('fill', function (d) { return color(d.stationId) });
 
-  circles.transition()
-    .duration(1500)
-    .ease(d3.easeLinear)
-    .attr("cx", function (d) { return lineChartXScale(d.date) })
-    .attr("cy", function (d) { return lineChartYScale(d.temperature) })
-    .attr('fill', function (d) { return color(d.stationId) });
+  // circles.transition()
+  //   .duration(1500)
+  //   .ease(d3.easeLinear)
+  //   .attr("cx", function (d) { return lineChartXScale(d.date) })
+  //   .attr("cy", function (d) { return lineChartYScale(d.temperature) })
+  //   .attr('fill', function (d) { return color(d.stationId) });
 
-  circles.exit()
-    .remove();
-
-
-  // console.log("After line creation")
-  // console.log(svg.selectAll(".line"))
-
+  // circles.exit()
+  //   .remove();
 
 
 }
