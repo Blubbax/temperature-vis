@@ -1,4 +1,22 @@
-#boxplot-visualization {
-  width: 100%;
-  min-height: 400px;
+.view-container {
+
+  position: relative;
+
+  #boxplot-axis-description-y {
+    position: absolute;
+    top: 200px;
+    left: -30px;
+    transform: rotate(270deg);
+  }
+
+  #boxplot-axis-description-x {
+    position: absolute;
+    top: 410px;
+    left: 400px;
+  }
+
+  #boxplot-visualization {
+    width: 100%;
+    height: 400px;
+  }
 }

@@ -10,7 +10,7 @@
         pause
       </span>
     </div>
-    <input type="range" name="time" min="0" [(ngModel)]="currentSliderValue" [max]="uniqueDates.length" id="input_time" (change)="dateChange($event)">
+    <input type="range" name="time" min="0" [(ngModel)]="currentSliderValue" [max]="uniqueDates.length - 1" id="input_time" (change)="dateChange($event)">
     <p>{{ selectedDate.getMonth() + 1 }} {{ selectedDate.getFullYear() }}</p>
   </div>
 </div>

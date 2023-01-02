@@ -1,3 +1,4 @@
+const { isTypeOnlyImportOrExportDeclaration } = require("typescript");
 
 function resizeBoxPlotChart() {
   var svg = d3.select("div#boxplot-visualization").select('svg');
@@ -13,7 +14,7 @@ function drawBoxPlotChart(data) {
   // inspired by https://d3-graph-gallery.com/graph/boxplot_show_individual_points.html
 
   // set the dimensions and margins of the graph
-  var margin = { top: 10, right: 30, bottom: 30, left: 40 };
+  var margin = { top: 10, right: 30, bottom: 30, left: 50 };
 
   var width = parseInt(d3.select("div#boxplot-visualization").style('width'), 10) - margin.left - margin.right;
   var height = parseInt(d3.select("div#boxplot-visualization").style('height'), 10) - margin.top - margin.bottom;
@@ -40,6 +41,52 @@ function drawBoxPlotChart(data) {
     max = q3 + 1.5 * interQuantileRange;
     return ({ q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max })
   }, d => d.month)
+
+  // Tooltip
+  var Tooltip = d3.select("div#boxplot-visualization")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "boxplot-tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("position", "absolute")
+    .style("right", "40px")
+    .style("top", "40px");
+
+  var mouseover = function (d) {
+    Tooltip
+      .style("opacity", 1);
+  }
+
+  var mousemove = function (d) {
+    console.log(d);
+    Tooltip
+      .html(
+        "Median: " + d.target.__data__[1].median.toFixed(3) + "<br>" +
+        "25 % Quantile: " + d.target.__data__[1].q1.toFixed(3) + "<br>" +
+        "75 % Quantile: " + d.target.__data__[1].q3.toFixed(3) + "<br>" +
+        "Inter Quantile Range: " + d.target.__data__[1].interQuantileRange.toFixed(3) + "<br>" +
+        "Min: " + d.target.__data__[1].min.toFixed(3) + "<br>" +
+        "Max: " + d.target.__data__[1].max.toFixed(3) + "<br>");
+
+    if (d.target.__data__[0] > 6) {
+      Tooltip
+        .style("right", null)
+        .style("left", "90px");
+    } else {
+      Tooltip
+        .style("right", "40px")
+        .style("left", null);
+    }
+  }
+
+  var mouseleave = function (d) {
+    Tooltip
+      .style("opacity", 0);
+  }
 
   // Show the X scale
   var x = d3.scaleBand()
@@ -83,6 +130,9 @@ function drawBoxPlotChart(data) {
     .attr("width", boxWidth)
     .attr("stroke", "black")
     .style("fill", "#69b3a2")
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
 
   // Show the median
   svg
@@ -98,7 +148,7 @@ function drawBoxPlotChart(data) {
     .style("width", 80)
 
   // Add individual points with jitter
-  var jitterWidth = 20
+  var jitterWidth = 40;
   svg
     .selectAll("indPoints")
     .data(data)
@@ -108,6 +158,13 @@ function drawBoxPlotChart(data) {
     .attr("cy", function (d) { return (y(d.temperature)) })
     .attr("r", 4)
     .style("fill", "transparent")
+    .style("visibility", function (d) {
+      if (d.temperature > sumstat.get(d.month).max || d.temperature < sumstat.get(d.month).min) {
+        return "visible";
+      } else {
+        return "hidden";
+      }
+    })
     .attr("stroke", "black")
 
 

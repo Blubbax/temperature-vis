@@ -17,7 +17,7 @@ export class BoxplotchartComponent implements OnInit {
 
   ngOnInit(): void {
     this.dataService.stationsVisSelection.subscribe((data: Station[]) => {
-      drawBoxPlotChart(this.dataService.getStationsAsTemperatureList([data[0]]));
+      drawBoxPlotChart(this.dataService.getStationsAsTemperatureList(data));
     });
   }
 

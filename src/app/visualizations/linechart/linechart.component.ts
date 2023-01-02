@@ -3,7 +3,7 @@ import { TemperatureRecord } from './../../model/temperature-record';
 import { DataService } from './../../service/data.service';
 import { Component, HostListener, OnInit } from '@angular/core';
 
-declare function drawLineChart(data: TemperatureRecord[]): void;
+declare function drawLineChart(data: TemperatureRecord[], linReg: boolean): void;
 declare function resizeLineChart(): void;
 
 @Component({
@@ -17,14 +17,13 @@ export class LinechartComponent implements OnInit {
   private rawData: TemperatureRecord[] = [];
   public months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   private currentSelection = "Year";
+  public showLineChart = false;
 
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.dataService.stationsFiltered.subscribe((data: Station[]) => {
-      // TODO data[0] restriction removen
-      // this.rawData = this.dataService.getStationsAsTemperatureList([data[0], data[1]]);
-      this.rawData = this.dataService.getStationsAsTemperatureList([data[0], data[1]]);
+    this.dataService.stationsVisSelection.subscribe((data: Station[]) => {
+      this.rawData = this.dataService.getStationsAsTemperatureList(data);
       this.currentData = this.rawData;
       this.changeSelection(this.currentSelection);
     });
@@ -36,13 +35,14 @@ export class LinechartComponent implements OnInit {
   }
 
   changeSelection(value: string) {
+    this.currentSelection = value;
     if (value == "Year") {
       this.currentData = this.rawData;
     } else {
       const monthNumber = this.convertMonthToNumber(value);
       this.currentData = this.rawData.filter(record => record.month == monthNumber);
     }
-    drawLineChart(this.currentData);
+    drawLineChart(this.currentData, this.showLineChart);
   }
 
   convertMonthToNumber(month: string) {
@@ -53,6 +53,11 @@ export class LinechartComponent implements OnInit {
       }
     });
     return index;
+  }
+
+  showLinearRegression(show: boolean) {
+    this.showLineChart = show;
+    drawLineChart(this.currentData, this.showLineChart);
   }
 
 }

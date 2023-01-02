@@ -1,13 +1,25 @@
 <div class="view-container">
+  <div id="linechart-axis-description">Temperature in °C</div>
   <div id="linechart-visualization"></div>
+  <div id="linechart-legend"></div>
   <div class="controls-container">
-    <span>
-      Select whole year or a specific month:
-    </span>
-    <select title="Month or Year" name="attributes" #attributes (change)="changeSelection(attributes.value)">
-      <option [value]="'Year'"  [defaultSelected]="true">Year</option>
-      <option *ngFor="let attr of months" [value]="attr">{{attr}}</option>
-    </select>
+    <div class="control">
+      <span>
+        Select whole year or a specific month:
+      </span>
+      <select title="Month or Year" name="attributes" #attributes (change)="changeSelection(attributes.value)">
+        <option [value]="'Year'" [defaultSelected]="true">Year</option>
+        <option *ngFor="let attr of months" [value]="attr">{{attr}}</option>
+      </select>
+    </div>
+    <div class="control">
+      <span>Show linear regression:</span>
+      <input type="radio" name="linReg" id="yes" [checked]="showLineChart" (change)="showLinearRegression(true)">
+      <label for="yes">Yes</label>
+      <input type="radio" name="linReg" id="no" [checked]="!showLineChart" (change)="showLinearRegression(false)">
+      <label for="no">No</label>
+
+
+    </div>
   </div>
 </div>
-

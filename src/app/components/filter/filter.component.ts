@@ -35,7 +35,6 @@ export class FilterComponent implements OnInit {
   }
 
   countriesChanged(selection: string[]) {
-    console.log(selection)
     this.currentFilter.countries = selection;
     this.dataService.applyFilter(this.currentFilter);
   }

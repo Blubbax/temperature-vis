@@ -232,10 +232,8 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
       }
     }
 
-    var doubleClick = function (d) {
+    var rightClick = function (d) {
       d.preventDefault();
-
-      console.log("doubledetected")
 
       g.selectAll("circle")
         .style("stroke", "none");
@@ -263,7 +261,6 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
       .merge(circles)
       .attr("cx", d => projection([d.longitude, d.latitude])[0])
       .attr("cy", d => projection([d.longitude, d.latitude])[1])
-      //.attr('transform', d => {if (mapZoomTransformation != undefined) {console.log(mapZoomTransformation); return mapZoomTransformation.transform}})
       .attr('transform', mapZoomTransformation)
       .attr("class", "myCircles")
       .attr("r", d => size(d.elevation))
@@ -285,7 +282,7 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
-      .on("contextmenu", doubleClick)
+      .on("contextmenu", rightClick)
       .on("click", click)
 
 

@@ -1,7 +1,23 @@
 @import "src/variables.scss";
 
-#linechart-visualization {
-  // height: 400px;
-  min-height: 400px;
-  width: 100%;
+.view-container {
+  position: relative;
+
+  #linechart-axis-description {
+    position: absolute;
+    top: 200px;
+    left: -30px;
+    transform: rotate(270deg);
+  }
+
+  #linechart-visualization {
+    // height: 400px;
+    height: 400px;
+    width: 100%;
+  }
+
+  #linechart-legend {
+    width: 100%;
+    // height: 400px;
+  }
 }
