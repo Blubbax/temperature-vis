@@ -80,14 +80,19 @@ export class MapComponent implements OnInit {
 
   startAnimation() {
     this.animationActive = !this.animationActive;
-    for (let i = 0; i < this.uniqueDates.length; i++) {
-      setTimeout(() => {
-        this.changeMapValues(i);
-      }, 500);
-    }
+    // for (let i = 0; i < this.uniqueDates.length; i++) {
+    //   setTimeout(() => {
+    //     this.changeMapValues(i);
+    //   }, 500);
+    // }
+    this.animationInterval = setInterval(() => {
+      this.currentSliderValue += 1;
+      this.changeMapValues(this.currentSliderValue);
+    }, 200);
   }
 
   stopAnimation() {
+    clearInterval(this.animationInterval);
     this.animationActive = !this.animationActive;
   }
 
