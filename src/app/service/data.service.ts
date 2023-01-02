@@ -2,7 +2,6 @@ import { FilterData } from './../model/filter-data';
 import { TemperatureRecord } from './../model/temperature-record';
 import { Station } from './../model/station';
 import { StationService } from './station.service';
-import { TemperatureService } from './temperature.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
@@ -103,13 +102,18 @@ export class DataService {
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
 
+  public selectOnly(station: Station) {
+    this.stationsSelectedRaw = [];
+    this.addToSelection(station);
+  }
+
   public addToSelection(station: Station) {
     this.stationsSelectedRaw.push(station);
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
 
   public removeFromSelection(station: Station) {
-    this.stationsSelectedRaw = this.stationsSelectedRaw.filter(current => current !== station);
+    this.stationsSelectedRaw = this.stationsSelectedRaw.filter(current => current.id != station.id);
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
 
@@ -117,6 +121,10 @@ export class DataService {
     var result: TemperatureRecord[] = [];
     stations.forEach((stat) => {result = result.concat(stat.temperatures)});
     return result;
+  }
+
+  public getSelectedStations() {
+    return this.stationsSelectedRaw;
   }
 
 

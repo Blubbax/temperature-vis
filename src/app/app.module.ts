@@ -16,6 +16,7 @@ import { FilterComponent } from './components/filter/filter.component';
 import { VisualizationsComponent } from './components/visualizations/visualizations.component';
 import { RangesliderComponent } from './visualizations/rangeslider/rangeslider.component';
 import { ExpansionPanelComponent } from './components/expansion-panel/expansion-panel.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { ExpansionPanelComponent } from './components/expansion-panel/expansion-
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

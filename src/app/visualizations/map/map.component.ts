@@ -1,9 +1,9 @@
 import { TemperatureRecord } from './../../model/temperature-record';
 import { Station } from './../../model/station';
 import { DataService } from './../../service/data.service';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core'
 
-declare function drawMap(data: Station[], temperatureMapping: Map<string, TemperatureRecord | undefined>): void;
+declare function drawMap(data: Station[], temperatureMapping: Map<string, TemperatureRecord | undefined>, selectedStations: Station[]): void;
 declare function resizeMap(): void;
 declare function drawLegend(): void;
 
@@ -31,18 +31,30 @@ export class MapComponent implements OnInit {
 
     drawLegend();
 
+    const eventConnectionPoint = document.getElementById('map-visualization');
+
+    eventConnectionPoint?.addEventListener('map-unselect', (e: any) => {
+      this.dataService.removeFromSelection(e.detail);
+    });
+
+    eventConnectionPoint?.addEventListener('map-select', (e: any) => {
+      this.dataService.addToSelection(e.detail);
+    });
+
+    eventConnectionPoint?.addEventListener('map-selectThis', (e: any) => {
+      this.dataService.selectOnly(e.detail);
+    });
+
     this.dataService.stationsFiltered.subscribe(
       data => {
         this.stationData = data;
-        this.determineTemperatureAtDate(this.selectedDate);
-        drawMap(data, this.selectedTemperatureData);
 
         var dates: Date[] = [];
         data.forEach(station => dates = dates.concat(station.temperatures.map(temp => temp.date)))
 
         var uniqueDates = Array.from(
-            new Set(dates.map((dateObject) => JSON.stringify(dateObject)))
-          ).map((dateString) => new Date(JSON.parse(dateString)));
+          new Set(dates.map((dateObject) => JSON.stringify(dateObject)))
+        ).map((dateString) => new Date(JSON.parse(dateString)));
 
         uniqueDates = uniqueDates.sort((a, b) => {
           if (a < b) return -1;
@@ -50,8 +62,12 @@ export class MapComponent implements OnInit {
         });
 
         this.uniqueDates = uniqueDates;
+
+        this.currentSliderValue = this.uniqueDates.length - 1;
+        this.changeMapValues(this.uniqueDates.length - 1);
       }
     );
+
   }
 
   @HostListener('window:resize', ['$event'])
@@ -64,8 +80,6 @@ export class MapComponent implements OnInit {
     this.stationData.forEach(station => {
       this.selectedTemperatureData.set(station.id, station.getTemperatureAt(date));
     });
-    console.log("temperature data updated");
-    console.log(this.selectedTemperatureData)
   }
 
   dateChange(event: any) {
@@ -75,16 +89,11 @@ export class MapComponent implements OnInit {
   changeMapValues(index: number) {
     this.selectedDate = this.uniqueDates[index];
     this.determineTemperatureAtDate(this.selectedDate);
-    drawMap(this.stationData, this.selectedTemperatureData);
+    drawMap(this.stationData, this.selectedTemperatureData, this.dataService.getSelectedStations());
   }
 
   startAnimation() {
     this.animationActive = !this.animationActive;
-    // for (let i = 0; i < this.uniqueDates.length; i++) {
-    //   setTimeout(() => {
-    //     this.changeMapValues(i);
-    //   }, 500);
-    // }
     this.animationInterval = setInterval(() => {
       this.currentSliderValue += 1;
       this.changeMapValues(this.currentSliderValue);
@@ -95,5 +104,6 @@ export class MapComponent implements OnInit {
     clearInterval(this.animationInterval);
     this.animationActive = !this.animationActive;
   }
+
 
 }

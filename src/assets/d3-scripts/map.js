@@ -2,6 +2,8 @@ svgCreated = false;
 tooltipCreated = false;
 mapCreated = false;
 
+var mapZoomTransformation;
+
 function resizeMap() {
   var svg = d3.select("div#map-visualization").select('svg');
 
@@ -16,7 +18,7 @@ function drawLegend() {
 
   const colourScale = d3.scaleLinear()
     .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
-    .range(['#3288bd','#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
+    .range(['#3288bd', '#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
 
 
   // Inpired by https://bl.ocks.org/Ro4052/caaf60c1e9afcd8ece95034ea91e1eaa
@@ -82,14 +84,11 @@ function drawLegend() {
   container.style("margin", "20px");
 }
 
-function drawMap(stationdata, temperatureMapping) {
-  console.log("temperatureMapping")
-  console.log(temperatureMapping)
+function drawMap(stationdata, temperatureMapping, selectedStations) {
   // Inpired by https://d3-graph-gallery.com/graph/bubblemap_circleFeatures.html
 
   this.figure = d3.select("div#map-visualization");
 
-  var zoomTransformation;
   var width = parseInt(this.figure.style('width'), 10)
   var height = parseInt(this.figure.style('height'), 10)
 
@@ -140,7 +139,7 @@ function drawMap(stationdata, temperatureMapping) {
     // const color = d3.scaleLinear().domain([-25, 40]).range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
     const color = d3.scaleLinear()
       .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
-      .range(['#3288bd','#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
+      .range(['#3288bd', '#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
 
     // Add a scale for bubble size
     const size = d3.scaleLinear()
@@ -187,8 +186,7 @@ function drawMap(stationdata, temperatureMapping) {
       Tooltip
         .style("opacity", 1)
       d3.select(this)
-        .style("stroke", "black")
-        .style("opacity", 1)
+        .style("fill-opacity", 1)
     }
 
     var mousemove = function (d) {
@@ -202,11 +200,11 @@ function drawMap(stationdata, temperatureMapping) {
             "Observations: not available for the selected date");
       } else {
         return Tooltip
-        .html(
-          "<b>" + d.target.__data__.name + " (" + d.target.__data__.country + ")</b><br>" +
-          "Elevation: " + d.target.__data__.elevation + " m<br>" +
-          "Temperature: " + temperature.temperature + " °C (" + String(temperature.month).padStart(2, '0') + " " + temperature.year + ")<br>" +
-          "Observations: " + temperature.observations);
+          .html(
+            "<b>" + d.target.__data__.name + " (" + d.target.__data__.country + ")</b><br>" +
+            "Elevation: " + d.target.__data__.elevation + " m<br>" +
+            "Temperature: " + temperature.temperature + " °C (" + String(temperature.month).padStart(2, '0') + " " + temperature.year + ")<br>" +
+            "Observations: " + temperature.observations);
       }
     }
 
@@ -214,8 +212,39 @@ function drawMap(stationdata, temperatureMapping) {
       Tooltip
         .style("opacity", 0)
       d3.select(this)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
+        .style("fill-opacity", 0.8)
+    }
+
+    var click = function (d) {
+      if (d3.select(this).style("stroke") == "none") {
+        d3.select(this)
+          .style("stroke", "black");
+
+        const eventConnectionPoint = document.getElementById('map-visualization');
+        eventConnectionPoint.dispatchEvent(new CustomEvent('map-select', { detail: d.target.__data__ }));
+
+      } else {
+        d3.select(this)
+          .style("stroke", "none");
+
+        const eventConnectionPoint = document.getElementById('map-visualization');
+        eventConnectionPoint.dispatchEvent(new CustomEvent('map-unselect', { detail: d.target.__data__ }));
+      }
+    }
+
+    var doubleClick = function (d) {
+      d.preventDefault();
+
+      console.log("doubledetected")
+
+      g.selectAll("circle")
+        .style("stroke", "none");
+
+      d3.select(this)
+        .style("stroke", "black");
+
+      const eventConnectionPoint = document.getElementById('map-visualization');
+      eventConnectionPoint.dispatchEvent(new CustomEvent('map-selectThis', { detail: d.target.__data__ }));
     }
 
 
@@ -234,7 +263,8 @@ function drawMap(stationdata, temperatureMapping) {
       .merge(circles)
       .attr("cx", d => projection([d.longitude, d.latitude])[0])
       .attr("cy", d => projection([d.longitude, d.latitude])[1])
-      .attr('transform', d => {if (zoomTransformation !== undefined) {console.log("sdsdfsdfsdfs"); return zoomTransformation.transform}})
+      //.attr('transform', d => {if (mapZoomTransformation != undefined) {console.log(mapZoomTransformation); return mapZoomTransformation.transform}})
+      .attr('transform', mapZoomTransformation)
       .attr("class", "myCircles")
       .attr("r", d => size(d.elevation))
       .style("fill", d => {
@@ -246,11 +276,8 @@ function drawMap(stationdata, temperatureMapping) {
         }
       })
       .attr("stroke", d => {
-        var temperature = temperatureMapping.get(d.id);
-        if (temperature == undefined) {
-          return "white"
-        } else {
-          return color(temperature.temperature);
+        if (selectedStations.includes(d)) {
+          return "black";
         }
       })
       .attr("stroke-width", 3)
@@ -258,6 +285,8 @@ function drawMap(stationdata, temperatureMapping) {
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+      .on("contextmenu", doubleClick)
+      .on("click", click)
 
 
 
@@ -296,7 +325,7 @@ function drawMap(stationdata, temperatureMapping) {
     var zoom = d3.zoom()
       .scaleExtent([1, 8])
       .on('zoom', function (event) {
-        zoomTransformation = event.transform
+        mapZoomTransformation = event.transform
         g.selectAll('path')
           .attr('transform', event.transform);
         svg.selectAll('circle')
