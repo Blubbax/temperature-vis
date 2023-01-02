@@ -18,6 +18,10 @@ export class MapComponent implements OnInit {
   private selectedTemperatureData: Map<string, TemperatureRecord | undefined> = new Map();
   private stationData: Station[] = [];
   public uniqueDates: Date[] = [];
+  public currentSliderValue: number = 0;
+
+  public animationActive = false;
+  public animationInterval: any;
 
   constructor(private dataService: DataService) {
     this.selectedDate = new Date(2016, 3);
@@ -60,12 +64,31 @@ export class MapComponent implements OnInit {
     this.stationData.forEach(station => {
       this.selectedTemperatureData.set(station.id, station.getTemperatureAt(date));
     });
+    console.log("temperature data updated");
+    console.log(this.selectedTemperatureData)
   }
 
   dateChange(event: any) {
-    this.selectedDate = this.uniqueDates[event.target.value];
+    this.changeMapValues(event.target.value);
+  }
+
+  changeMapValues(index: number) {
+    this.selectedDate = this.uniqueDates[index];
     this.determineTemperatureAtDate(this.selectedDate);
     drawMap(this.stationData, this.selectedTemperatureData);
+  }
+
+  startAnimation() {
+    this.animationActive = !this.animationActive;
+    for (let i = 0; i < this.uniqueDates.length; i++) {
+      setTimeout(() => {
+        this.changeMapValues(i);
+      }, 500);
+    }
+  }
+
+  stopAnimation() {
+    this.animationActive = !this.animationActive;
   }
 
 }

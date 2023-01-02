@@ -30,7 +30,7 @@ export class Station {
 
   getTemperatureAt(date: Date): TemperatureRecord | undefined {
     var result = this.temperatures.filter(record =>
-      record.month == date.getMonth()
+      record.month == date.getMonth() + 1
       && record.year == date.getFullYear());
 
     if (result.length > 0) {

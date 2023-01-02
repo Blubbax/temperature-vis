@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ExpansionPanelComponent implements OnInit {
 
-  public visibility = false;
+  public visibility = true;
   @Input() title: string = "";
 
   constructor() { }

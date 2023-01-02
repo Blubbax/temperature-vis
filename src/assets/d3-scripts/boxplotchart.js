@@ -1,4 +1,3 @@
-boxPlotChartCreated = false;
 
 function resizeBoxPlotChart() {
   var svg = d3.select("div#boxplot-visualization").select('svg');
@@ -15,12 +14,11 @@ function drawBoxPlotChart(data) {
 
   // set the dimensions and margins of the graph
   var margin = { top: 10, right: 30, bottom: 30, left: 40 };
-    // width = 800 - margin.left - margin.right,
-    // height = 400 - margin.top - margin.bottom;
 
-    var width = parseInt(d3.select("div#boxplot-visualization").style('width'), 10) - margin.left - margin.right;
-    var height = parseInt(d3.select("div#boxplot-visualization").style('height'), 10) - margin.top - margin.bottom;
+  var width = parseInt(d3.select("div#boxplot-visualization").style('width'), 10) - margin.left - margin.right;
+  var height = parseInt(d3.select("div#boxplot-visualization").style('height'), 10) - margin.top - margin.bottom;
 
+  d3.select("div#boxplot-visualization").select("svg").remove();
 
   // append the svg object to the body of the page
   var svg = d3.select("div#boxplot-visualization")

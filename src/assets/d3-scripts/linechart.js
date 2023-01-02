@@ -116,7 +116,7 @@ function drawLineChart(data) {
     // .transition().duration(500).ease(d3.easeLinear)
         .attr("cx", function (d) { return lineChartXScale(d.date) })
         .attr("cy", function (d) { return lineChartYScale(d.temperature) })
-        .attr("class", "dot")
+        .attr("class", "circle")
         .attr("r", 3)
         .attr('fill', function (d) { return color(d.stationId) });
     // .attr("class", "circle")

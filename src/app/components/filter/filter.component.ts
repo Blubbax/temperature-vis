@@ -30,7 +30,7 @@ export class FilterComponent implements OnInit {
 
   applyRangeFilter(range: number[]) {
     this.currentFilter.timeSpan.yearStart = range[0];
-    this.currentFilter.timeSpan.yearEnd = range[1];
+    this.currentFilter.timeSpan.yearEnd = range[1] - 1;
     this.dataService.applyFilter(this.currentFilter);
   }
 

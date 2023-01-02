@@ -15,8 +15,9 @@ function resizeMap() {
 function drawLegend() {
 
   const colourScale = d3.scaleLinear()
-      .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
-      .range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
+    .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
+    .range(['#3288bd','#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
+
 
   // Inpired by https://bl.ocks.org/Ro4052/caaf60c1e9afcd8ece95034ea91e1eaa
   const container = d3.select("div#legend");
@@ -82,6 +83,8 @@ function drawLegend() {
 }
 
 function drawMap(stationdata, temperatureMapping) {
+  console.log("temperatureMapping")
+  console.log(temperatureMapping)
   // Inpired by https://d3-graph-gallery.com/graph/bubblemap_circleFeatures.html
 
   this.figure = d3.select("div#map-visualization");
@@ -137,7 +140,7 @@ function drawMap(stationdata, temperatureMapping) {
     // const color = d3.scaleLinear().domain([-25, 40]).range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
     const color = d3.scaleLinear()
       .domain([-24, -16, -8, 0, 8, 16, 24, 32, 40])
-      .range(['#d53e4f','#f46d43','#fdae61','#fee08b','#ffffbf','#e6f598','#abdda4','#66c2a5','#3288bd'])
+      .range(['#3288bd','#66c2a5', '#abdda4', '#e6f598', '#ffffbf', '#fee08b', '#fdae61', '#f46d43', '#d53e4f'])
 
     // Add a scale for bubble size
     const size = d3.scaleLinear()
@@ -189,13 +192,24 @@ function drawMap(stationdata, temperatureMapping) {
     }
 
     var mousemove = function (d) {
-      Tooltip
+      var temperature = temperatureMapping.get(d.target.__data__.id);
+      if (temperature == undefined) {
+        return Tooltip
+          .html(
+            "<b>" + d.target.__data__.name + " (" + d.target.__data__.country + ")</b><br>" +
+            "Elevation: " + d.target.__data__.elevation + " m<br>" +
+            "Temperature: not available for the selected date<br>" +
+            "Observations: not available for the selected date");
+      } else {
+        return Tooltip
         .html(
           "<b>" + d.target.__data__.name + " (" + d.target.__data__.country + ")</b><br>" +
           "Elevation: " + d.target.__data__.elevation + " m<br>" +
-          "Temperature: " + d.target.__data__.temperatures[0].temperature + " °C (" + String(d.target.__data__.temperatures[0].month).padStart(2, '0') + " " + d.target.__data__.temperatures[0].year + ")")
-
+          "Temperature: " + temperature.temperature + " °C (" + String(temperature.month).padStart(2, '0') + " " + temperature.year + ")<br>" +
+          "Observations: " + temperature.observations);
+      }
     }
+
     var mouseleave = function (d) {
       Tooltip
         .style("opacity", 0)
@@ -206,14 +220,22 @@ function drawMap(stationdata, temperatureMapping) {
 
 
     // Add circles:
-    svg.selectAll("myCircles").remove();
 
-    svg
+    g.selectAll("circle").remove();
+
+    const circles = g
       .selectAll("myCircles")
-      .data(stationdata)
-      .join("circle")
+      .data(stationdata);
+
+    circles
+      .enter()
+      .append('circle')
+      .attr('class', 'myCircles')
+      .merge(circles)
       .attr("cx", d => projection([d.longitude, d.latitude])[0])
       .attr("cy", d => projection([d.longitude, d.latitude])[1])
+      .attr('transform', d => {if (zoomTransformation !== undefined) {console.log("sdsdfsdfsdfs"); return zoomTransformation.transform}})
+      .attr("class", "myCircles")
       .attr("r", d => size(d.elevation))
       .style("fill", d => {
         var temperature = temperatureMapping.get(d.id);
@@ -226,16 +248,48 @@ function drawMap(stationdata, temperatureMapping) {
       .attr("stroke", d => {
         var temperature = temperatureMapping.get(d.id);
         if (temperature == undefined) {
-          return "black"
+          return "white"
         } else {
           return color(temperature.temperature);
         }
       })
       .attr("stroke-width", 3)
-      .attr("fill-opacity", .9)
+      .attr("fill-opacity", .8)
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
+
+
+
+    // svg
+    //   .selectAll("myCircles")
+    //   .data(stationdata)
+    //   .join("circle")
+    //   .attr("cx", d => projection([d.longitude, d.latitude])[0])
+    //   .attr("cy", d => projection([d.longitude, d.latitude])[1])
+    //   .attr("class", "myCircles")
+    //   .attr("r", d => size(d.elevation))
+    //   .style("fill", d => {
+    //     var temperature = temperatureMapping.get(d.id);
+    //     if (temperature == undefined) {
+    //       return "white"
+    //     } else {
+    //       return color(temperature.temperature);
+    //     }
+    //   })
+    //   .attr("stroke", d => {
+    //     var temperature = temperatureMapping.get(d.id);
+    //     if (temperature == undefined) {
+    //       return "black"
+    //     } else {
+    //       return color(temperature.temperature);
+    //     }
+    //   })
+    //   .attr("stroke-width", 3)
+    //   .attr("fill-opacity", .9)
+    //   .on("mouseover", mouseover)
+    //   .on("mousemove", mousemove)
+    //   .on("mouseleave", mouseleave)
 
 
 

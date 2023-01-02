@@ -79,12 +79,17 @@ export class DataService {
     });
 
     this.stationsFilteredSubject.next(this.stationsFilteredRaw);
+    this.stationsVisSelectionSubject.next(this.stationsFilteredRaw);
+    console.log("The filter has been updated")
+    console.log(filter);
+    console.log(this.stationsFilteredRaw);
   }
 
   public resetFilter() {
     this.currentFilter = undefined;
     this.stationsFilteredRaw = Array.from(this.stationsRaw.values());
     this.stationsFilteredSubject.next(this.stationsFilteredRaw);
+    this.stationsVisSelectionSubject.next(this.stationsFilteredRaw);
   }
 
 

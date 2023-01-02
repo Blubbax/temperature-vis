@@ -4,8 +4,8 @@ function drawRangeslider(data) {
   console.log("Rangeslider draw");
 
   const defaultOptions = {
-    'w': 600,
-    'h': 100,
+    'w': 800,
+    'h': 150,
     'margin': {
       top: 20,
       bottom: 20,

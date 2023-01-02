@@ -2,15 +2,15 @@
   <div id="legend"></div>
   <div id="map-visualization"></div>
   <div class="animation-controls controls-container">
-    <div  class="animation-btn">
-      <span class="material-symbols-outlined">
+    <div class="animation-btn">
+      <span class="material-symbols-outlined" (click)="startAnimation()" *ngIf="!animationActive">
         play_arrow
       </span>
-      <!-- <span class="material-symbols-outlined">
+      <span class="material-symbols-outlined" (click)="stopAnimation()" *ngIf="animationActive">
         pause
-      </span> -->
+      </span>
     </div>
     <input type="range" name="time" min="0" [max]="uniqueDates.length" id="input_time" (change)="dateChange($event)">
-    <p>{{ selectedDate.getMonth() }} {{ selectedDate.getFullYear() }}</p>
+    <p>{{ selectedDate.getMonth() + 1 }} {{ selectedDate.getFullYear() }}</p>
   </div>
 </div>
