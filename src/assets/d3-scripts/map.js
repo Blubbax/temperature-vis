@@ -14,6 +14,26 @@ function resizeMap() {
     .attr("height", height);
 }
 
+function updateSelection(data) {
+
+  svg = this.figure
+      .select("svg");
+
+  g = svg.select("g");
+
+  const ids = data.map(station => station.id)
+
+  g.selectAll("circle")
+    .attr("stroke", d => {
+      if (ids.includes(d.id)) {
+        return "black";
+      } else {
+        return "none";
+      }
+    });
+
+}
+
 function drawLegend() {
 
   const colourScale = d3.scaleLinear()
@@ -144,7 +164,7 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
     // Add a scale for bubble size
     const size = d3.scaleLinear()
       .domain([0, 1200])  // What's in the data
-      .range([4, 18])  // Size in pixel
+      .range([8, 18])  // Size in pixel
 
     if (!mapCreated) {
       // Draw the map
@@ -212,7 +232,7 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
       Tooltip
         .style("opacity", 0)
       d3.select(this)
-        .style("fill-opacity", 0.8)
+        .style("fill-opacity", 1)
     }
 
     var click = function (d) {
@@ -263,7 +283,13 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
       .attr("cy", d => projection([d.longitude, d.latitude])[1])
       .attr('transform', mapZoomTransformation)
       .attr("class", "myCircles")
-      .attr("r", d => size(d.elevation))
+      .attr("r", d => {
+        if (mapZoomTransformation === undefined) {
+          return size(d.elevation)
+        } else {
+          return size(d.elevation) * (1 / mapZoomTransformation.k)
+        }
+      })
       .style("fill", d => {
         var temperature = temperatureMapping.get(d.id);
         if (temperature == undefined) {
@@ -277,8 +303,15 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
           return "black";
         }
       })
-      .attr("stroke-width", 3)
-      .attr("fill-opacity", .8)
+      .attr("stroke-width", d => {
+        if (mapZoomTransformation === undefined) {
+          return 3;
+        } else {
+          return 3 * (1 / mapZoomTransformation.k)
+        }
+      })
+      .attr("fill-opacity", d => 1)
+      .style("cursor", "pointer")
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
@@ -317,6 +350,11 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
     //   .on("mousemove", mousemove)
     //   .on("mouseleave", mouseleave)
 
+    // svg
+    //   .call( d3.brush()                 // Add the brush feature using the d3.brush function
+    //     .extent( [ [0,0], [300,400] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+    //     // .on("start brush", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+    //   )
 
 
     var zoom = d3.zoom()
@@ -326,7 +364,9 @@ function drawMap(stationdata, temperatureMapping, selectedStations) {
         g.selectAll('path')
           .attr('transform', event.transform);
         svg.selectAll('circle')
-          .attr('transform', event.transform);
+          .attr('transform', event.transform)
+          .attr("r", d => size(d.elevation) * (1 / event.transform.k))
+          .attr("stroke-width", 3 * (1 / event.transform.k));
       });
 
     svg.call(zoom);

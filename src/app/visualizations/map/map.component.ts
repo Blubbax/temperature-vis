@@ -6,6 +6,7 @@ import { Component, HostListener, OnInit } from '@angular/core'
 declare function drawMap(data: Station[], temperatureMapping: Map<string, TemperatureRecord | undefined>, selectedStations: Station[]): void;
 declare function resizeMap(): void;
 declare function drawLegend(): void;
+declare function updateSelection(data: Station[]): void;
 
 @Component({
   selector: 'app-map',
@@ -45,8 +46,7 @@ export class MapComponent implements OnInit {
       this.dataService.selectOnly(e.detail);
     });
 
-    this.dataService.stationsFiltered.subscribe(
-      data => {
+    this.dataService.stationsFiltered.subscribe(data => {
         this.stationData = data;
 
         var dates: Date[] = [];
@@ -64,9 +64,20 @@ export class MapComponent implements OnInit {
         this.uniqueDates = uniqueDates;
 
         this.currentSliderValue = this.uniqueDates.length - 1;
-        this.changeMapValues(this.uniqueDates.length - 1);
+
+
+        this.selectedDate = this.uniqueDates[this.uniqueDates.length - 1];
+        this.determineTemperatureAtDate(this.selectedDate);
+        drawMap(this.stationData, this.selectedTemperatureData, data);
+
+        updateSelection(data);
       }
     );
+
+    this.dataService.stationsVisSelection.subscribe(data => {
+      console.log("trigger selection update in map")
+      updateSelection(data);
+    })
 
   }
 

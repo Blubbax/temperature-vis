@@ -2,9 +2,9 @@
 
 <div class="grid-container">
   <app-map id="map"></app-map>
-  <app-linechart id="linechart"></app-linechart>
   <app-boxplotchart id="boxplot"></app-boxplotchart>
 </div>
+<app-linechart id="linechart"></app-linechart>
 
 <!-- <app-table [attributes]="['stationId', 'year', 'month', 'date', 'temperature', 'observations', 'station.name']" [selectedAttributes]="['stationId', 'year', 'month', 'temperature', 'observations']"></app-table> -->
 <app-table [attributes]="['id', 'latitude', 'longitude', 'elevation', 'country', 'name']" [selectedAttributes]="['id', 'elevation', 'country', 'name']"></app-table>

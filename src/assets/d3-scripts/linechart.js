@@ -2,14 +2,17 @@ var lineChartXScale;
 var lineChartYScale;
 
 function drawLinechartLegend(data) {
+
   // inspired by https://d3-graph-gallery.com/graph/custom_legend.html
 
   const stations = data.map(record => record.station);
   const uniqueStations = new Set(stations);
 
+
   const margin = { top: 10, right: 30, bottom: 30, left: 30 };
-  var width = parseInt(d3.select("div#linechart-legend").style('width'), 10);
-  var height = Math.trunc(uniqueStations.size / 4) * 25;
+  const width = parseInt(d3.select("div#linechart-legend").style('width'), 10) - margin.left - margin.right - 35;
+  const columns = Math.trunc(width / 200);
+  const height = Math.trunc(uniqueStations.size / columns) * 25;
 
   d3.select("div#linechart-legend").select("svg").remove();
   var svg = d3.select("div#linechart-legend").append("svg")
@@ -22,7 +25,18 @@ function drawLinechartLegend(data) {
     // .range(['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928'])
     .range(['#377eb8', '#4daf4a', '#984ea3', '#ff7f00', '#ffff33', '#a65628', '#f781bf', '#999999', '#e41a1c'])
 
-    const columns = 4;
+
+  var legendclick = function (d) {
+    // Remove element from selection
+    const eventConnectionPoint = document.getElementById('linechart-legend');
+    eventConnectionPoint.dispatchEvent(new CustomEvent('linechart-unselect', { detail: d.target.__data__ }));
+  }
+
+  var legendrightClick = function (d) {
+    // Remove element from selection
+    const eventConnectionPoint = document.getElementById('linechart-legend');
+    eventConnectionPoint.dispatchEvent(new CustomEvent('linechart-selectThis', { detail: d.target.__data__ }));
+  }
 
   svg.selectAll("legenddots")
     .data(uniqueStations)
@@ -31,7 +45,13 @@ function drawLinechartLegend(data) {
     .attr("cx", function (d, i) { return 10 + ((i % columns) * 200) })
     .attr("cy", function (d, i) { return 10 + (Math.trunc(i / columns) * 25) })
     .attr("r", 7)
-    .style("fill", function (d, i) { return color(i) })
+    .style("fill", function (d, i) {
+      if (uniqueStations.size > 9) {
+        return color(d.country);
+      } else {
+        return color(d.id);
+      }
+    })
 
   svg.selectAll("legendlabels")
     .data(uniqueStations)
@@ -44,6 +64,9 @@ function drawLinechartLegend(data) {
     .text(function (d) { return d.name.substring(0, 20) })
     .attr("text-anchor", "left")
     .style("alignment-baseline", "middle")
+    .style("cursor", "pointer")
+    .on("click", legendclick)
+    .on("contextmenu", legendrightClick)
 
 
 }
@@ -130,6 +153,8 @@ function drawLineChart(data, linReg) {
   //   .attr("transform", "rotate(270)")
   //   .style("alignment-baseline", "middle")
 
+  const uniqueStations = new Set(data.map(record => record.station));
+
 
   // Draw the line
   svg.selectAll(".line")
@@ -138,10 +163,19 @@ function drawLineChart(data, linReg) {
     .attr("class", "line")
     .attr("fill", "none")
     .transition().duration(500).ease(d3.easeLinear)
-    .attr("stroke", function (d) { return color(d[0]) })
+    .attr("stroke", function (d) {
+      if (uniqueStations.size > 9) {
+        return color(d[1][0].station.country);
+      } else {
+        return color(d[0]);
+      }
+    })
     .attr("stroke-width", 1.5)
-    .attr("d", line);
+    .attr("d", line)
 
+    svg.selectAll(".line")
+      .append("title")
+      .text(d => d[1][0].station.name + " (" + d[1][0].station.country + ")");
 
   var circles = svg.selectAll("circle")
     .data(data)
@@ -149,13 +183,20 @@ function drawLineChart(data, linReg) {
     .attr("cx", function (d) { return lineChartXScale(d.date) })
     .attr("cy", function (d) { return lineChartYScale(d.temperature) })
     .attr("class", "circle")
-    .attr("r", 3)
-    .attr('fill', function (d) { return color(d.stationId) })
+    .attr("r", 4)
+    .attr('fill', function (d) {
+      if (uniqueStations.size > 9) {
+        return color(d.station.country);
+      } else {
+        return color(d.stationId);
+      }
+    })
     .append("title")
     .text(d => d.temperature + "°C " + "(" + d.month + " " + d.year + " - " + d.station.name + " in " + d.station.country + ")");
 
-  drawLinechartLegend(data);
 
+
+  drawLinechartLegend(data);
 
   if (linReg) {
 
@@ -170,7 +211,9 @@ function drawLineChart(data, linReg) {
       .attr("class", "linReg")
       .attr("fill", "none")
       .attr("stroke", "red")
-      .attr("stroke-width", 2);
+      .attr("stroke-width", 2)
+      .append("title")
+      .text("slope: " + linearRegression[2]);
   }
 
 }
@@ -192,8 +235,6 @@ function calcLinearRegression(data) {
     xySum += xArray[i] * yArray[i];
   }
 
-  console.log(xSum);
-
   // Calculate slope and intercept
   var slope = (count * xySum - xSum * ySum) / (count * xxSum - xSum * xSum);
   var intercept = (ySum / count) - (slope * xSum) / count;
@@ -203,5 +244,5 @@ function calcLinearRegression(data) {
   const y1 = x1 * slope + intercept;
   const y2 = x2 * slope + intercept;
 
-  return [[new Date(x1), y1], [new Date(x2), y2]];
+  return [[new Date(x1), y1], [new Date(x2), y2], slope];
 }

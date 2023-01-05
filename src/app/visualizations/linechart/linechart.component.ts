@@ -22,6 +22,18 @@ export class LinechartComponent implements OnInit {
   constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
+
+    const eventConnectionPoint = document.getElementById('linechart-legend');
+
+    eventConnectionPoint?.addEventListener('linechart-unselect', (e: any) => {
+      this.dataService.removeFromSelection(e.detail);
+    });
+
+    eventConnectionPoint?.addEventListener('linechart-selectThis', (e: any) => {
+      this.dataService.selectOnly(e.detail);
+    });
+
+
     this.dataService.stationsVisSelection.subscribe((data: Station[]) => {
       this.rawData = this.dataService.getStationsAsTemperatureList(data);
       this.currentData = this.rawData;

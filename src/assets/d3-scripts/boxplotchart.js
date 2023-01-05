@@ -14,7 +14,7 @@ function drawBoxPlotChart(data) {
   // inspired by https://d3-graph-gallery.com/graph/boxplot_show_individual_points.html
 
   // set the dimensions and margins of the graph
-  var margin = { top: 10, right: 30, bottom: 30, left: 50 };
+  var margin = { top: 10, right: 30, bottom: 50, left: 50 };
 
   var width = parseInt(d3.select("div#boxplot-visualization").style('width'), 10) - margin.left - margin.right;
   var height = parseInt(d3.select("div#boxplot-visualization").style('height'), 10) - margin.top - margin.bottom;
@@ -61,8 +61,25 @@ function drawBoxPlotChart(data) {
       .style("opacity", 1);
   }
 
-  var mousemove = function (d) {
-    console.log(d);
+  var mousemoveOutlier = function (d) {
+    Tooltip
+      .html("<b>" + d.target.__data__.station.name + " (" + d.target.__data__.station.country + ")" + "</b><br>" +
+      "Temperature: " + d.target.__data__.temperature + " °C<br>" +
+      "Observations: " + d.target.__data__.observations +
+      "Date: " + d.target.__data__.month + " " + d.target.__data__.year + "<br>");
+
+    if (d.target.__data__[0] > 6) {
+      Tooltip
+        .style("right", null)
+        .style("left", "90px");
+    } else {
+      Tooltip
+        .style("right", "40px")
+        .style("left", null);
+    }
+  }
+
+  var mousemoveBoxplot = function (d) {
     Tooltip
       .html(
         "Median: " + d.target.__data__[1].median.toFixed(3) + "<br>" +
@@ -118,7 +135,7 @@ function drawBoxPlotChart(data) {
     .style("width", 40)
 
   // rectangle for the main box
-  var boxWidth = 50
+  var boxWidth = width / 12 - 10;
   svg
     .selectAll("boxes")
     .data(sumstat)
@@ -131,8 +148,8 @@ function drawBoxPlotChart(data) {
     .attr("stroke", "black")
     .style("fill", "#69b3a2")
     .on("mouseover", mouseover)
-    .on("mousemove", mousemove)
-    .on("mouseleave", mouseleave)
+    .on("mousemove", mousemoveBoxplot)
+    .on("mouseleave", mouseleave);
 
   // Show the median
   svg
@@ -148,7 +165,7 @@ function drawBoxPlotChart(data) {
     .style("width", 80)
 
   // Add individual points with jitter
-  var jitterWidth = 40;
+  var jitterWidth = width / 12 - 10;
   svg
     .selectAll("indPoints")
     .data(data)
@@ -166,6 +183,9 @@ function drawBoxPlotChart(data) {
       }
     })
     .attr("stroke", "black")
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemoveOutlier)
+    .on("mouseleave", mouseleave)
 
 
 }

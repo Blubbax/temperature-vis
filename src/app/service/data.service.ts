@@ -78,7 +78,7 @@ export class DataService {
     });
 
     this.stationsFilteredSubject.next(this.stationsFilteredRaw);
-    this.stationsVisSelectionSubject.next(this.stationsFilteredRaw);
+    this.resetSelection();
   }
 
   public resetFilter() {
@@ -94,7 +94,7 @@ export class DataService {
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
 
-  public resetSelection(stations: Station[]) {
+  public resetSelection() {
     this.stationsSelectedRaw = Array.from(this.stationsFilteredRaw.values());
     this.stationsVisSelectionSubject.next(this.stationsSelectedRaw);
   }
