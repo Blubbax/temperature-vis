@@ -131,6 +131,49 @@ function drawLineChart(data, linReg) {
     .attr("class", "y axis")
     .call(yAxis);
 
+  // Tooltip
+  var Tooltip = d3.select("div#linechart-visualization")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "linechart-tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("position", "absolute")
+    .style("right", "40px")
+    .style("top", "40px");
+
+    var mouseover = function (d) {
+      Tooltip
+        .style("opacity", 1);
+    }
+
+    var mousemoveDot = function (d) {
+      console.log(d);
+      Tooltip
+        .html("<b>" + d.target.__data__.station.name + " (" + d.target.__data__.station.country + ")" + "</b><br>" +
+        "Temperature: " + d.target.__data__.temperature + " °C<br>" +
+        "Observations: " + d.target.__data__.observations + "<br>" +
+        "Date: " + d.target.__data__.month + " " + d.target.__data__.year + "<br>");
+
+      if (d.clientX > 980) {
+        Tooltip
+          .style("right", null)
+          .style("left", "90px");
+      } else {
+        Tooltip
+          .style("right", "40px")
+          .style("left", null);
+      }
+    }
+
+    var mouseleave = function (d) {
+      Tooltip
+        .style("opacity", 0);
+    }
+
 
   // color palette
   const color = d3.scaleOrdinal()
@@ -171,11 +214,11 @@ function drawLineChart(data, linReg) {
       }
     })
     .attr("stroke-width", 1.5)
-    .attr("d", line)
+    .attr("d", line);
 
-    svg.selectAll(".line")
-      .append("title")
-      .text(d => d[1][0].station.name + " (" + d[1][0].station.country + ")");
+  svg.selectAll(".line")
+    .append("title")
+    .text(d => d[1][0].station.name + " (" + d[1][0].station.country + ")");
 
   var circles = svg.selectAll("circle")
     .data(data)
@@ -191,8 +234,9 @@ function drawLineChart(data, linReg) {
         return color(d.stationId);
       }
     })
-    .append("title")
-    .text(d => d.temperature + "°C " + "(" + d.month + " " + d.year + " - " + d.station.name + " in " + d.station.country + ")");
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemoveDot)
+    .on("mouseleave", mouseleave);
 
 
 
@@ -201,6 +245,22 @@ function drawLineChart(data, linReg) {
   if (linReg) {
 
     const linearRegression = calcLinearRegression(data);
+
+    var mousemoveLinReg = function (d) {
+      Tooltip
+        .html("<b>Linear Regression</b><br>" +
+          "Slope: " + linearRegression[2]);
+
+      if (d.clientX > 980) {
+        Tooltip
+          .style("right", null)
+          .style("left", "90px");
+      } else {
+        Tooltip
+          .style("right", "40px")
+          .style("left", null);
+      }
+    }
 
     svg
       .append("line")
@@ -212,6 +272,9 @@ function drawLineChart(data, linReg) {
       .attr("fill", "none")
       .attr("stroke", "red")
       .attr("stroke-width", 2)
+      .on("mouseover", mouseover)
+      .on("mousemove", mousemoveLinReg)
+      .on("mouseleave", mouseleave)
       .append("title")
       .text("slope: " + linearRegression[2]);
   }

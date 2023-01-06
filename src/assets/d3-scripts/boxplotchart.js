@@ -65,7 +65,7 @@ function drawBoxPlotChart(data) {
     Tooltip
       .html("<b>" + d.target.__data__.station.name + " (" + d.target.__data__.station.country + ")" + "</b><br>" +
       "Temperature: " + d.target.__data__.temperature + " °C<br>" +
-      "Observations: " + d.target.__data__.observations +
+      "Observations: " + d.target.__data__.observations + "<br>" +
       "Date: " + d.target.__data__.month + " " + d.target.__data__.year + "<br>");
 
     if (d.target.__data__[0] > 6) {
