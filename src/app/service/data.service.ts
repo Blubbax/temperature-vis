@@ -1,3 +1,4 @@
+import { TemperatureService } from './temperature.service';
 import { FilterData } from './../model/filter-data';
 import { TemperatureRecord } from './../model/temperature-record';
 import { Station } from './../model/station';
@@ -31,6 +32,7 @@ export class DataService {
 
   constructor(
     private stationService: StationService,
+    private temperatureService: TemperatureService
   ) {
 
     // Make station data accessible
@@ -59,7 +61,12 @@ export class DataService {
   public applyFilter(filter: FilterData) {
     this.currentFilter = filter;
 
+    const temperatures = this.temperatureService.getTemperatures();
+
     this.stationsFilteredRaw = Array.from(this.stationsRaw.values());
+    this.stationsFilteredRaw.forEach(station => {
+      station.temperatures = temperatures.filter(record => { return record.station == station });
+    });
 
     if (filter.countries.length > 0) {
       this.stationsFilteredRaw = this.stationsFilteredRaw.filter(record =>

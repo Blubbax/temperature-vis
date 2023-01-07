@@ -75,7 +75,6 @@ export class MapComponent implements OnInit {
     );
 
     this.dataService.stationsVisSelection.subscribe(data => {
-      console.log("trigger selection update in map")
       updateSelection(data);
     })
 

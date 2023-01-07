@@ -59,5 +59,8 @@ export class TemperatureService {
       });
   }
 
+  public getTemperatures() {
+    return this.temperatureRecords;
+  }
 
 }

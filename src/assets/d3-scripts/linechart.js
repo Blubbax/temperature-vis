@@ -151,7 +151,6 @@ function drawLineChart(data, linReg) {
     }
 
     var mousemoveDot = function (d) {
-      console.log(d);
       Tooltip
         .html("<b>" + d.target.__data__.station.name + " (" + d.target.__data__.station.country + ")" + "</b><br>" +
         "Temperature: " + d.target.__data__.temperature + " °C<br>" +
